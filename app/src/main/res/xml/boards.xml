@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<boards lang="fr">
+    <board name="principale" />
+    <board name="activites" />
+    <board name="lieux" />
+    <board name="objets" />
+    <board name="personnes" />
+    <board name="raconter" />
+    <board name="sentiments" />
+</boards>

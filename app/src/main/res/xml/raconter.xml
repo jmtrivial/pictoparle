@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board cellWidth="50" cellHeight="40" id="6" name="pour raconter">
+    <cells>
+        <row>
+            <pictogram txt="avant" image="avant" />
+            <pictogram txt="maintenant" image="maintenant" />
+            <pictogram txt="après" image="apres" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+    </cells>
+</board>

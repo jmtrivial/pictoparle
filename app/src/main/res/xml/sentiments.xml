@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board cellWidth="50" cellHeight="40" id="7" name="sentiments et sensations">
+    <cells>
+        <row>
+            <pictogram txt="contente" image="contente" />
+            <pictogram txt="fachée" image="fachee" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="j'ai faim" image="jai_faim" />
+            <pictogram txt="j'ai mal" image="jai_mal" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+    </cells>
+</board>

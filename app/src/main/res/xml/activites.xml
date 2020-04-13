@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board cellWidth="50" cellHeight="40" id="3" name="activités">
+    <cells>
+        <row>
+            <pictogram txt="arts plastiques" image="arts_plastiques" />
+            <pictogram txt="jeux de société" image="jeux_de_societe" />
+            <pictogram txt="lire un livre" image="lire_un_livre" />
+            <pictogram txt="écouter un disque" image="ecouter_musique" />
+        </row>
+        <row>
+            <pictogram txt="câlin" image="calin" />
+            <pictogram txt="" image="" />
+            <pictogram txt="saxophone" image="saxophone" />
+            <pictogram txt="histoire" image="histoire" />
+        </row>
+        <row>
+            <pictogram txt="équitation" image="equitation" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="ranger" image="ranger" />
+        </row>
+    </cells>
+</board>

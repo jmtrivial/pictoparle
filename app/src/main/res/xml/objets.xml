@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board cellWidth="50" cellHeight="40" id="4" name="objets et animaux">
+    <cells>
+        <row>
+            <pictogram txt="mouchoir" image="mouchoir" />
+            <pictogram txt="classeur de vie" image="classeur_de_vie" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="canne" image="canne" />
+            <pictogram txt="fauteuil roulant" image="fauteuil_roulant" />
+            <pictogram txt="voiture" image="voiture" />
+            <pictogram txt="taxi" image="taxi" />
+        </row>
+        <row>
+            <pictogram txt="chien" image="chien" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+    </cells>
+</board>

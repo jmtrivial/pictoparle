@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board cellWidth="50" cellHeight="40" id="2" name="lieux">
+    <cells>
+        <row>
+            <pictogram txt="toilettes" image="toilettes" />
+            <pictogram txt="chambre" image="chambre" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="CRDV" image="crdv" />
+            <pictogram txt="chez Maman" image="chez_maman" />
+            <pictogram txt="chez Papa" image="chez_papa" />
+            <pictogram txt="piscine, balnéothérapie" image="piscine" />
+        </row>
+    </cells>
+</board>
