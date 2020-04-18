@@ -7,19 +7,21 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
-import android.view.GestureDetector;
+
 import android.view.MotionEvent;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
 import androidx.annotation.RequiresApi;
 
+
 import java.util.ArrayList;
 
 class BoardView extends LinearLayout {
     private Board board;
 
-    private GestureDetector gestureDetector;
+    //private GestureDetector gestureDetector;
+    private RobustGestureDetector gestureDetector;
 
     private float slideThreshold;
 
@@ -72,11 +74,14 @@ class BoardView extends LinearLayout {
 
         // slide threshold correspond to the diagonal of a pictogram
         slideThreshold = board.cellHeightPX * board.cellHeightPX + board.cellWidthPX + board.cellWidthPX;
-        gestureDetector = new GestureDetector(context, new GestureListener());
+        //gestureDetector = new GestureDetector(context, new GestureListener());
+        gestureDetector = new RobustGestureDetector(context, new GestureListener());
+
 
 
         // TODO: add here a button to open a menu
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void computeSpans() {
@@ -96,7 +101,8 @@ class BoardView extends LinearLayout {
         return gestureDetector.onTouchEvent(e);
     }
 
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    //private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    class GestureListener extends RobustGestureDetector.SimpleOnGestureListener {
 
         @Override
         public boolean onDown(MotionEvent e) {
@@ -107,8 +113,8 @@ class BoardView extends LinearLayout {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             // detect if it is inside a button
-            int x = (int) e.getX();
-            int y = (int) e.getY();
+            int x = (int) e.getX(e.getActionIndex());
+            int y = (int) e.getY(e.getActionIndex());
             PictoButton picto = getPictogramAtXY(x, y);
             if (picto != null)
                 picto.playSound();
@@ -116,10 +122,10 @@ class BoardView extends LinearLayout {
         }
 
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onLargeMoveSingleFinger(MotionEvent e, float prevX, float prevY) {
             boolean result = false;
-            float diffY = e2.getY() - e1.getY();
-            float diffX = e2.getX() - e1.getX();
+            float diffX = e.getX(e.getActionIndex()) - prevX;
+            float diffY = e.getY(e.getActionIndex()) - prevY;
             float distance2 = (diffX * diffX + diffY * diffY);
             if (distance2 > slideThreshold) {
                 if (Math.abs(diffX) < Math.abs(diffY)) {
@@ -145,6 +151,13 @@ class BoardView extends LinearLayout {
             }
             return result;
         }
+
+        @Override
+        public boolean onLongPress(MotionEvent e) {
+            // will be used for the menu button
+            return false;
+        }
+
     }
 
     private PictoButton getPictogramAtXY(int x, int y) {
