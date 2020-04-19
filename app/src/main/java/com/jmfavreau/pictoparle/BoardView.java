@@ -29,6 +29,8 @@ class BoardView extends LinearLayout {
 
     private PictoParleActivity activity;
 
+    private TextToSpeech tts;
+
     private int horizontalSpanPX;
     private int verticalSpanPX;
 
@@ -43,6 +45,7 @@ class BoardView extends LinearLayout {
         setOrientation(LinearLayout.VERTICAL);
         this.board = board;
         this.activity = pictoParleActivity;
+        this.tts = tts;
         computeSpans();
 
 
@@ -101,6 +104,14 @@ class BoardView extends LinearLayout {
         return gestureDetector.onTouchEvent(e);
     }
 
+    public void notifyActive() {
+        // TODO: add support for non synthetic voice
+        tts.speak("La planche \"" + board.name + "\" est active", TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    public void notifySelected() {
+        tts.speak("Planche \"" + board.name, TextToSpeech.QUEUE_FLUSH, null);
+    }
     //private class GestureListener extends GestureDetector.SimpleOnGestureListener {
     class GestureListener extends RobustGestureDetector.SimpleOnGestureListener {
 

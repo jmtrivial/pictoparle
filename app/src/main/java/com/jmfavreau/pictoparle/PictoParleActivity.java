@@ -1,16 +1,28 @@
 package com.jmfavreau.pictoparle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.XmlResourceParser;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -23,13 +35,46 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 
+/*
+    PictoParle activity
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
+    * TODO: check for permissions, and ask user if the camera is not allowed
+    * TODO: board selection should not be in fullscreen mode
+    * TODO: if the application is switched in background, turn off the camera
+    * TODO: when a finger is on the screen, remove the covered detection.
+
+    see https://developer.android.com/training/permissions/requesting.html
  */
-public class PictoParleActivity extends AppCompatActivity {
-    private ArrayList<Board> boards;
+
+public class PictoParleActivity
+        extends AppCompatActivity
+        implements BoardDetector.SimpleBoardListener {
+    protected ArrayList<Board> boards;
+
+    private BoardsAdapter boardsAdapter;
+
+    public class BoardsAdapter extends ArrayAdapter<Board> {
+
+        public BoardsAdapter(Context context, ArrayList<Board> boards) {
+            super(context, 0, boards);
+        }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Board board = getItem(position);
+            // Check if an existing view is being reused, otherwise inflate the view
+            if (convertView == null) {
+                convertView = LayoutInflater.from(this.getContext()).inflate(R.layout.item_board, parent, false);
+            }
+            // Lookup view for data population
+            TextView bdName = (TextView) convertView.findViewById(R.id.bdName);
+            // Populate the data into the template view using the data object
+            bdName.setText(board.name);
+            // Return the completed view to render on screen
+            return convertView;
+
+        }
+
+    }
 
     private TreeMap<Integer, BoardView> views;
 
@@ -37,17 +82,31 @@ public class PictoParleActivity extends AppCompatActivity {
 
     private TextToSpeech tts;
 
+    private BoardDetector boardDetector;
+
     /** true DPI cannot be get from the Android API. Thus it is a parameter of the application*/
     /* TODO: add a menu entry to change these values */
     private float xdpi = 149.5F;
     private float ydpi = 149.5F;
     private String lang;
+    private ConsoleHandler console;
 
+    private View waitingForBoard;
+    private View boardList;
+    private int selected;
+    private boolean isActiveBoard;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // TODO: send a message to the user, asking to give permissions
+            Log.w("PictoParle", "Permissions not granted");
+            // Permission is not granted
+        }
 
         // set view container
         setContentView(R.layout.activity_fullscreen);
@@ -57,7 +116,10 @@ public class PictoParleActivity extends AppCompatActivity {
         // select default language
         lang = "fr";
 
-        ConsoleHandler console = new ConsoleHandler();
+        isActiveBoard = false;
+
+
+        console = new ConsoleHandler();
 
         // load boards
         try {
@@ -69,6 +131,12 @@ public class PictoParleActivity extends AppCompatActivity {
         catch (XmlPullParserException e) {
             console.publish(new LogRecord(Level.SEVERE, "XML Error while reading a board."));
         }
+
+        /* the selected board is the first of the list */
+        selected = boards.get(0).id;
+
+        boardDetector = new BoardDetector(this);
+
 
         // set text-to-speech method with the good language
         tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
@@ -83,23 +151,40 @@ public class PictoParleActivity extends AppCompatActivity {
             }
         });
 
-        // create one layout per board
-        createLayouts();
-
-        // select the first board
-        try {
-            setActiveBoard(getBoardByID(1));
-
-        }
-        catch (NoSuchFieldException e) {
-            console.publish(new LogRecord(Level.SEVERE, "No board has been loaded."));
-        }
+        // create all the views of this activity
+        buildViews();
 
         // set volume buttons to control this application volume
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        // screen light is reduced as much as possible
-        setScreenVisible(false);
+        // set a waiting message (no board has been detected)
+        setActiveWaitingMessage();
+    }
+
+    private void buildViews() {
+        // create the board views
+        createBoardViews();
+
+        LayoutInflater factory = LayoutInflater.from(this);
+
+        // create the waiting view
+        waitingForBoard = factory.inflate(R.layout.waiting_for_board, null);
+
+        // create the view for board choosing
+        boardList = factory.inflate(R.layout.board_selection_list, null);
+
+        // add all the existing boards in the list
+        boardsAdapter = new BoardsAdapter(this, boards);
+        ListView lv = boardList.findViewById(R.id.board_listview);
+        lv.setAdapter(boardsAdapter);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                setSelected(boardsAdapter.getItem(position).id);
+                setActiveWaitingMessage();
+            }
+        });
+
     }
 
     private Board getBoardByID(int id) throws NoSuchFieldException {
@@ -111,15 +196,46 @@ public class PictoParleActivity extends AppCompatActivity {
         throw new NoSuchFieldException();
     }
 
+    private void setActiveWaitingMessage() {
+        TextView sel = waitingForBoard.findViewById(R.id.selected_board);
+        String name = new String();
+        try {
+            name = getBoardByID(selected).name;
+        } catch (NoSuchFieldException e) {
+            name = "Aucune planche sélectionnée";
+            selected = -1;
+        }
+        sel.setText("Planche sélectionnée : " + name);
+        setScreenVisible(true);
+        mainContainer.removeAllViews();
+        mainContainer.addView(waitingForBoard);
+        boardDetector.setActive();
+        isActiveBoard = false;
+    }
+
+    private void setActiveBoardList() {
+        setScreenVisible(true);
+        mainContainer.removeAllViews();
+        mainContainer.addView(boardList);
+        boardDetector.setInactive();
+        isActiveBoard = false;
+    }
+
+
     private void setActiveBoard(Board board) {
         if (views.containsKey(board.id)) {
+            setScreenVisible(false);
             mainContainer.removeAllViews();
-            mainContainer.addView(views.get(board.id));
+            BoardView bv = views.get(board.id);
+            mainContainer.addView(bv);
+            bv.notifyActive();
+            boardDetector.setActive();
+            isActiveBoard = true;
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    private void createLayouts() {
+    private void createBoardViews() {
         views = new TreeMap<>();
         for(int i = 0; i != boards.size(); i++) {
             views.put(this.boards.get(i).id, new BoardView(this.getApplicationContext(),
@@ -141,8 +257,6 @@ public class PictoParleActivity extends AppCompatActivity {
 
     private void loadXMLResources() throws IOException, XmlPullParserException {
         boards = new ArrayList<>();
-
-        ConsoleHandler console = new ConsoleHandler();
 
         // load boards
         XmlResourceParser xrp = getResources().getXml(R.xml.boards);
@@ -177,8 +291,17 @@ public class PictoParleActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         fullScreen();
-        setScreenVisible(false);
+        if (isActiveBoard)
+            setScreenVisible(false);
     }
+
+    protected void setSelected(int position) {
+        selected = position;
+        views.get(position).notifySelected();
+        boardDetector.setActive();
+    }
+
+
 
     private void fullScreen() {
         View mContentView = findViewById(R.id.fullscreen_container);
@@ -196,4 +319,45 @@ public class PictoParleActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onRemovedBoard() {
+        tts.speak("Choix d'une planche",  TextToSpeech.QUEUE_FLUSH, null);
+        setActiveWaitingMessage();
+    }
+
+    @Override
+    public void onNewHoverBoard(int boardID) {
+        if (views.containsKey(boardID)) {
+            setSelected(boardID);
+        }
+        else {
+            tts.speak("Je ne connais pas cette planche (numéro " + boardID + ")",
+                    TextToSpeech.QUEUE_FLUSH, null);
+        }
+    }
+
+    @Override
+    public void onBoardDown() {
+        if (selected == -1) {
+            tts.speak("Je n'ai pas eu le temps de reconnaître la planche.",
+                    TextToSpeech.QUEUE_FLUSH, null);
+        }
+        else {
+            // select the selected board
+            try {
+                setActiveBoard(getBoardByID(selected));
+            } catch (NoSuchFieldException e) {
+                tts.speak("Je ne connais pas cette planche (numéro " + selected + ")",
+                        TextToSpeech.QUEUE_FLUSH, null);
+            }
+        }
+    }
+
+    public void onClickSelectBoard(View view) {
+        setActiveBoardList();
+    }
+
+    public void onClickCloseBoardList(View view) {
+        setActiveWaitingMessage();
+    }
 }

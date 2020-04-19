@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ccc8c0"
+    android:background="@color/main_background"
     android:id="@+id/fullscreen_container"
     tools:context=".PictoParleActivity">
 

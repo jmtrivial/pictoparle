@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PictoParle</string>
+    <string name="hover_board">pour changer d\'activité, présentez une planche ou</string>
+    <string name="select_in_list">choisir dans la liste</string>
+    <string name="menu">Menu</string>
+    <string name="cancel">Annuler</string>
 </resources>
