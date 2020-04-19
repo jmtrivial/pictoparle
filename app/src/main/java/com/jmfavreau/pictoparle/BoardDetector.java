@@ -9,6 +9,7 @@ import android.hardware.Camera;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -39,7 +40,7 @@ public class BoardDetector {
         task = null;
 
         imageProcessing = new Camera.PictureCallback() {
-            public void onPictureTaken(byte[] data, Camera camera) {
+            public void onPictureTaken(byte[] data, Camera cam) {
 
                 if (active) {
                     boolean cov = isCovered(data);
@@ -67,6 +68,11 @@ public class BoardDetector {
                         }
                     }
                 }
+                else {
+                    camera.stopPreview();
+                    camera.release();
+                    camera = null;
+                }
 
             }
 
@@ -82,7 +88,7 @@ public class BoardDetector {
                     val += data[i] & 0xFF;
                 }
                 val /= size;
-                return (val < 50);
+                return (val < 10);
             }
         };
 
@@ -120,6 +126,14 @@ public class BoardDetector {
     }
 
     private void initCamera() {
+        Log.d("PictoParle", "init camera");
+
+        if (camera != null && !active) {
+            camera.stopPreview();
+            camera.release();
+            camera = null;
+        }
+
         if (camera == null) {
             camera = getCameraInstance();
         }
@@ -190,7 +204,8 @@ public class BoardDetector {
         task = new TimerTask() {
             @Override
             public void run() {
-                checkCoverageAndQRCode();
+                if (active)
+                    checkCoverageAndQRCode();
             }
         };
 
@@ -210,18 +225,17 @@ public class BoardDetector {
 
     public void setInactive() {
         if (this.active) {
+            Log.d("PictoParle", "set board detector inactive");
             this.active = false;
             stopTimer();
-            camera.stopPreview();
-            camera.release();
-            camera = null;
         }
     }
 
     public void setActive() {
         if (init || !this.active) {
-            this.active = true;
+            Log.d("PictoParle", "set board detector active");
             initCamera();
+            this.active = true;
             if (init) {
                 // first run to decide if it's covered or not
                 checkCoverageAndQRCode();
@@ -232,7 +246,16 @@ public class BoardDetector {
         }
     }
 
+    public void clear() {
+        Log.d("PictoParle", "clear board detector");
+        camera.stopPreview();
+        camera.release();
+        camera = null;
+    }
 
+    public boolean isReady() {
+        return !init;
+    }
 
     public interface SimpleBoardListener {
         void onRemovedBoard();

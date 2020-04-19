@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,7 @@ public class PictoParleActivity
     protected ArrayList<Board> boards;
 
     private BoardsAdapter boardsAdapter;
+    private boolean isWaitingBoard;
 
     public class BoardsAdapter extends ArrayAdapter<Board> {
 
@@ -117,6 +119,7 @@ public class PictoParleActivity
         lang = "fr";
 
         isActiveBoard = false;
+        isWaitingBoard = false;
 
 
         console = new ConsoleHandler();
@@ -160,6 +163,17 @@ public class PictoParleActivity
         // set a waiting message (no board has been detected)
         setActiveWaitingMessage();
     }
+
+    protected void onDestroy() {
+        super.onDestroy();
+        boardDetector.clear();
+    }
+
+    protected  void onPause() {
+        super.onPause();
+        boardDetector.setInactive();
+    }
+
 
     private void buildViews() {
         // create the board views
@@ -211,19 +225,21 @@ public class PictoParleActivity
         mainContainer.addView(waitingForBoard);
         boardDetector.setActive();
         isActiveBoard = false;
+        isWaitingBoard = true;
     }
 
     private void setActiveBoardList() {
         setScreenVisible(true);
         mainContainer.removeAllViews();
         mainContainer.addView(boardList);
-        boardDetector.setInactive();
         isActiveBoard = false;
+        isWaitingBoard = false;
     }
 
 
     private void setActiveBoard(Board board) {
         if (views.containsKey(board.id)) {
+            Log.d("PictoParle", "set active board: " + board.name);
             setScreenVisible(false);
             mainContainer.removeAllViews();
             BoardView bv = views.get(board.id);
@@ -231,6 +247,7 @@ public class PictoParleActivity
             bv.notifyActive();
             boardDetector.setActive();
             isActiveBoard = true;
+            isWaitingBoard = false;
         }
     }
 
@@ -291,8 +308,12 @@ public class PictoParleActivity
     protected void onResume() {
         super.onResume();
         fullScreen();
-        if (isActiveBoard)
+        if (isActiveBoard) {
             setScreenVisible(false);
+        }
+        if ((isActiveBoard || isWaitingBoard) && boardDetector.isReady()) {
+            boardDetector.setActive();
+        }
     }
 
     protected void setSelected(int position) {
