@@ -24,6 +24,10 @@ allprojects {
     }
 }
 
+ext {
+    navigationVersion = "2.2.2"
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }

@@ -9,6 +9,7 @@ import android.hardware.Camera;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -173,10 +174,29 @@ public class BoardDetector {
             }
 
             //set focus mode
-            param.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
+            if (param.getFocusMode() != null) {
+                param.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
+            }
 
-            param.setPictureFormat(ImageFormat.NV21);
-            camera.setParameters(param);
+            List<Integer> formats = param.getSupportedPictureFormats();
+            if (formats != null) {
+                if (formats.contains(ImageFormat.NV16)) {
+                    param.setPictureFormat(ImageFormat.NV16);
+                }
+                else if (formats.contains(ImageFormat.NV21)) {
+                    param.setPictureFormat(ImageFormat.NV21);
+                }
+                else {
+                    Log.w("PictoParle", "Cannot select a valid image format.");
+                }
+            }
+
+            try {
+                camera.setParameters(param);
+            }
+            catch (RuntimeException e) {
+                // might occur on Virtual environments, ignore it
+            }
             width = param.getPictureSize().width;
             height = param.getPictureSize().height;
 
@@ -248,8 +268,10 @@ public class BoardDetector {
 
     public void clear() {
         Log.d("PictoParle", "clear board detector");
-        camera.stopPreview();
-        camera.release();
+        if (camera != null) {
+            camera.stopPreview();
+            camera.release();
+        }
         camera = null;
     }
 

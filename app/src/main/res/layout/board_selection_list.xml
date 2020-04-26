@@ -4,25 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/select_in_list"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:background="@color/main_background_light"
-        android:elevation="4dp"
-        android:padding="10dp"
-        />
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
         android:id="@+id/board_listview"
         />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/cancel"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:onClick="onClickCloseBoardList"/>
 </LinearLayout>

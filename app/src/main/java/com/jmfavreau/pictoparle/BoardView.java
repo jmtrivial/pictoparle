@@ -9,6 +9,7 @@ import android.os.Build;
 import android.speech.tts.TextToSpeech;
 
 import android.view.MotionEvent;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
@@ -48,6 +49,8 @@ class BoardView extends LinearLayout {
         this.tts = tts;
         computeSpans();
 
+        //setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
 
         buttons = new ArrayList<>();
         for(int i = board.nbRows - 1; i >= 0; --i) {
@@ -82,6 +85,7 @@ class BoardView extends LinearLayout {
 
 
 
+
         // TODO: add here a button to open a menu
     }
 
@@ -104,14 +108,7 @@ class BoardView extends LinearLayout {
         return gestureDetector.onTouchEvent(e);
     }
 
-    public void notifyActive() {
-        // TODO: add support for non synthetic voice
-        tts.speak("La planche \"" + board.name + "\" est active", TextToSpeech.QUEUE_FLUSH, null);
-    }
 
-    public void notifySelected() {
-        tts.speak("Planche \"" + board.name, TextToSpeech.QUEUE_FLUSH, null);
-    }
     //private class GestureListener extends GestureDetector.SimpleOnGestureListener {
     class GestureListener extends RobustGestureDetector.SimpleOnGestureListener {
 
@@ -181,5 +178,6 @@ class BoardView extends LinearLayout {
         }
         return null;
     }
+
 
 }
