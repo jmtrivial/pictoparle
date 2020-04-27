@@ -35,8 +35,6 @@ class BoardView extends LinearLayout {
 
     private PictoParleActivity activity;
 
-    private TextToSpeech tts;
-
     private int horizontalSpanPX;
     private int verticalSpanPX;
 
@@ -46,14 +44,13 @@ class BoardView extends LinearLayout {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public BoardView(Context context, Board board, TextToSpeech tts,
+    public BoardView(Context context, Board board,
                      PictoParleActivity pictoParleActivity,
                      RobustGestureDetector.RobustGestureDetectorParams params) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
         this.board = board;
         this.activity = pictoParleActivity;
-        this.tts = tts;
         computeSpans();
 
         //setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
@@ -70,7 +67,7 @@ class BoardView extends LinearLayout {
                     spacer.setLayoutParams(new ActionBar.LayoutParams(horizontalSpanPX, board.cellHeightPX));
                     row.addView(spacer);
                 }
-                PictoButton picto = new PictoButton(context, tts, board.getPictogram(i, j), board);
+                PictoButton picto = new PictoButton(context, activity.audioRenderer, board.getPictogram(i, j), board);
                 buttons.add(picto);
                 row.addView(picto);
             }

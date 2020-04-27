@@ -12,6 +12,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.preference.ListPreference;
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
@@ -53,7 +54,6 @@ public class PictoParleActivity
 
     String lang;
 
-    protected TextToSpeech tts;
 
     protected BoardDetector boardDetector;
     private BoardDetector.SimpleBoardListener currentFragment;
@@ -68,6 +68,8 @@ public class PictoParleActivity
     private long interval_covered;
     private long interval_uncovered;
     protected RobustGestureDetector.RobustGestureDetectorParams params;
+    protected AudioRenderer audioRenderer;
+    private int audio_verbosity;
 
     // a function to show explanation when asking permission
     private void showExplanation(String title,
@@ -148,18 +150,8 @@ public class PictoParleActivity
         // the default language is the language defined in the boards
         lang = boardSet.getLang();
 
-        // set text-to-speech method with the good language
-        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
-                    if (lang.equals("fr"))
-                        tts.setLanguage(Locale.FRANCE);
-                    else
-                        tts.setLanguage(Locale.UK);
-                }
-            }
-        });
+        audioRenderer = new AudioRenderer(getApplicationContext(), lang);
+        audioRenderer.setAudioVerbosity(audio_verbosity);
 
         drawerLayout = findViewById(R.id.fullscreen_container);
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -198,6 +190,7 @@ public class PictoParleActivity
                 Integer.parseInt(preferences.getString("tap_timeout", "150")),
                 4096, 128);
 
+        audio_verbosity = Integer.parseInt(preferences.getString("audio_verbosity", "1"));
     }
 
     @Override
@@ -252,7 +245,7 @@ public class PictoParleActivity
     protected void onResume() {
         super.onResume();
         fullScreen();
-        tts.speak("Pictoparle est prêt",  TextToSpeech.QUEUE_FLUSH, null);
+        audioRenderer.speak("Pictoparle est prêt", "Prêt", "");
     }
 
 
@@ -289,8 +282,7 @@ public class PictoParleActivity
             // TODO: change view to board fragment
         }
         else {
-            tts.speak("Pictoparle ne connait pas cette planche (numéro " + boardID + ")",
-                    TextToSpeech.QUEUE_FLUSH, null);
+            audioRenderer.speak("Pictoparle ne connait pas cette planche (numéro " + boardID + ")", "Planche inconnue.");
         }
     }
 
@@ -298,8 +290,7 @@ public class PictoParleActivity
     @Override
     public void onBoardDown() {
         if (boardSet.getSelected() == -1) {
-            tts.speak("Pictoparle n'a pas eu le temps de reconnaître la planche.",
-                    TextToSpeech.QUEUE_FLUSH, null);
+            audioRenderer.speak("Pictoparle n'a pas eu le temps de reconnaître la planche.", "Pas de planche.");
         }
         else {
             // go back to the last activity
@@ -319,7 +310,7 @@ public class PictoParleActivity
     protected  void onPause() {
         super.onPause();
         boardDetector.setInactive();
-        tts.speak("Pictoparle se met en pause",  TextToSpeech.QUEUE_FLUSH, null);
+        audioRenderer.speak("Pictoparle se met en pause", "Pause.","");
     }
 
 
@@ -366,6 +357,10 @@ public class PictoParleActivity
     }
     public void setTapTimeout(int tap_timeout) {
         this.params.tapTimeout = tap_timeout;
+    }
+    public void setAudioVerbosity(int av) {
+        audio_verbosity = av;
+        audioRenderer.setAudioVerbosity(av);
     }
 
 

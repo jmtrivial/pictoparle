@@ -33,7 +33,7 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
         views = new TreeMap<>();
         for(int i = 0; i != activity.boardSet.size(); i++) {
             views.put(activity.boardSet.get(i).id, new BoardView(activity,
-                    activity.boardSet.get(i), activity.tts, activity,
+                    activity.boardSet.get(i), activity,
                     activity.params));
         }
 
@@ -45,7 +45,8 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
 
     @Override
     public void onResume() {
-        activity.tts.speak("Planche \"" + activity.boardSet.getSelectedBoard().name, TextToSpeech.QUEUE_FLUSH, null);
+        String boardName = activity.boardSet.getSelectedBoard().name;
+        activity.audioRenderer.speak("Planche \"" + boardName, boardName);
         activity.getSupportActionBar().hide();
         super.onResume();
         activity.setScreenVisible(false);

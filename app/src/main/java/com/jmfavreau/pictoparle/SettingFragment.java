@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -20,6 +21,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
     private Preference interval_uncovered;
     private Preference double_tap_timeout;
     private Preference tap_timeout;
+    private Preference audio_verbosity;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -99,6 +101,15 @@ public class SettingFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 activity.setTapTimeout(Integer.valueOf(newValue.toString()));
+                return true;
+            }
+        });
+
+        audio_verbosity = getPreferenceManager().findPreference("audio_verbosity");
+        audio_verbosity.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                activity.setAudioVerbosity(Integer.valueOf(newValue.toString()));
                 return true;
             }
         });

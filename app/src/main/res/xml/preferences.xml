@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- PreferenceCategory android:title="Audio">
-        <ListPreference
-            app:key="audio_mode"
-            app:title="Mode privilégié"
+    <PreferenceCategory android:title="Audio">
+        <!-- ListPreference
+            app:key="audio_source"
+            app:title="Type de voix"
             app:useSimpleSummaryProvider="true"
             app:entries="@array/audio_mode_entries"
             app:entryValues="@array/audio_mode_entry_values"
             app:defaultValue="1"
-            app:dialogTitle="Mode à privilégier pour chaque contenu énoncé, suivant la disponibilité de la source."/>
+            app:dialogTitle="Type de voix à privilégier pour chaque contenu énoncé, suivant la disponibilité de la source."/-->
 
         <ListPreference
-            app:key="verbosity"
+            app:key="audio_verbosity"
             app:title="Verbosité"
             app:useSimpleSummaryProvider="true"
             app:entries="@array/verbosity_entries"
             app:entryValues="@array/verbosity_entry_values"
             app:defaultValue="1"
             app:dialogTitle="Verbosité des contenus énoncés." />
-    </PreferenceCategory-->
+    </PreferenceCategory>
 
 
     <PreferenceCategory android:title="Interactions">
