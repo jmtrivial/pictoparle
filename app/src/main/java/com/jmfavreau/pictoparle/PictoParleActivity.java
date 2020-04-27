@@ -56,6 +56,7 @@ public class PictoParleActivity
     private NavController navController;
     private DrawerLayout drawerLayout;
     private AppBarConfiguration appBarConfiguration;
+    protected boolean manual;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -83,6 +84,7 @@ public class PictoParleActivity
         boardDetector = new BoardDetector(this);
 
         boardDetector.setActive();
+        manual = false;
 
         // set text-to-speech method with the good language
         tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
@@ -121,12 +123,20 @@ public class PictoParleActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.application_exit) {
+        if (id == R.id.run_board_manual) {
+            forceManualBoardDown();
+        }
+        else if (id == R.id.application_exit) {
             finish();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void forceManualBoardDown() {
+        manual = true;
+        onBoardDown();
     }
 
     @Override
@@ -230,4 +240,7 @@ public class PictoParleActivity
     }
 
 
+    public void back() {
+        Navigation.findNavController(findViewById(R.id.nav_host_fragment)).popBackStack();
+    }
 }

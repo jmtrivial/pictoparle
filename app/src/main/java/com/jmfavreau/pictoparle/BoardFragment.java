@@ -29,6 +29,7 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
     PictoParleActivity activity;
 
     FrameLayout view;
+    private BoardView boardView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -45,8 +46,6 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
 
         view = new FrameLayout(getContext());
         view.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-
-        setActiveBoard();
 
         return view;
     }
@@ -72,7 +71,15 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
     private void setActiveBoard() {
         int selected = activity.boardSet.getSelected();
         view.removeAllViews();
-        view.addView(views.get(selected));
+        boardView = views.get(selected);
+        if (activity.manual) {
+            boardView.setManual(true);
+            activity.manual = false;
+        }
+        else {
+            boardView.setManual(false);
+        }
+        view.addView(boardView);
         activity.setCurrentFragment(this);
     }
 
@@ -90,6 +97,8 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
 
     @Override
     public void onBoardDown() {
-        // ignore event
+        // hide close button
+        boardView.setManual(false);
+
     }
 }

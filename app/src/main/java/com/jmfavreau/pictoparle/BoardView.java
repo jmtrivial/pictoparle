@@ -3,22 +3,28 @@ package com.jmfavreau.pictoparle;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
 import androidx.annotation.RequiresApi;
+import androidx.navigation.Navigation;
 
 
 import java.util.ArrayList;
 
 class BoardView extends LinearLayout {
+    private ImageButton closeButton;
     private Board board;
 
     //private GestureDetector gestureDetector;
@@ -75,6 +81,21 @@ class BoardView extends LinearLayout {
                 Space spacer = new Space(context);
                 spacer.setLayoutParams(new ActionBar.LayoutParams(board.cellWidthPX, verticalSpanPX));
                 spaceRow.addView(spacer);
+
+                if (i == board.nbRows - 1) {
+                    closeButton = new ImageButton(context);
+                    closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+                    closeButton.setLayoutParams(new ActionBar.LayoutParams(horizontalSpanPX, verticalSpanPX));
+                    closeButton.setBackgroundColor(Color.WHITE);
+                    closeButton.setVisibility(View.INVISIBLE);
+                    closeButton.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            activity.back();
+                        }
+                    });
+                    spaceRow.addView(closeButton);
+                }
+
             }
         }
 
@@ -106,6 +127,16 @@ class BoardView extends LinearLayout {
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         return gestureDetector.onTouchEvent(e);
+    }
+
+    public void setManual(boolean b) {
+        if (b) {
+            closeButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            closeButton.setVisibility(View.INVISIBLE);
+        }
+
     }
 
 

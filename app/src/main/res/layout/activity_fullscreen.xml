@@ -36,6 +36,7 @@
         app:headerLayout="@layout/menu_header"
         app:itemIconTint="@android:color/black"
         app:itemTextColor="@android:color/black"
+        app:theme="@style/SideBarTheme"
         android:background="@color/main_background_light"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

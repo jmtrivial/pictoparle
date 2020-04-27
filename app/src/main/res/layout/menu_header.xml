@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/nav_header"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
+    android:layout_height="180dp"
     android:background="@color/colorAccent"
     android:clickable="true"
     android:focusable="true"
@@ -14,8 +14,8 @@
 
     <ImageView
         android:id="@+id/nav_header_imageView"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
@@ -24,5 +24,5 @@
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
         android:text="PictoParle"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 </LinearLayout>
