@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
@@ -82,7 +83,9 @@ class BoardView extends LinearLayout {
 
                 if (i == board.nbRows - 1) {
                     closeButton = new ImageButton(context);
-                    closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+                    closeButton.setImageResource(R.drawable.cross);
+                    closeButton.setAdjustViewBounds(true);
+                    closeButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                     closeButton.setLayoutParams(new ActionBar.LayoutParams(horizontalSpanPX, verticalSpanPX));
                     closeButton.setBackgroundColor(Color.WHITE);
                     closeButton.setVisibility(View.INVISIBLE);

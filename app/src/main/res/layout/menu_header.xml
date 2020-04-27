@@ -16,7 +16,7 @@
         android:id="@+id/nav_header_imageView"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/ic_pictoparle_icon" />
 
     <TextView
         android:id="@+id/nav_header_textView"
