@@ -4,6 +4,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -18,9 +20,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.Locale;
 
@@ -38,7 +43,7 @@ import java.util.Locale;
 
 public class PictoParleActivity
         extends AppCompatActivity
-        implements BoardDetector.SimpleBoardListener {
+        implements BoardDetector.SimpleBoardListener, NavigationView.OnNavigationItemSelectedListener {
 
     protected BoardSet boardSet;
 
@@ -48,6 +53,9 @@ public class PictoParleActivity
 
     protected BoardDetector boardDetector;
     private BoardDetector.SimpleBoardListener currentFragment;
+    private NavController navController;
+    private DrawerLayout drawerLayout;
+    private AppBarConfiguration appBarConfiguration;
 
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -89,19 +97,42 @@ public class PictoParleActivity
             }
         });
 
+        drawerLayout = findViewById(R.id.fullscreen_container);
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
 
         // add content using the NavController process, associated to the toolbar
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).setDrawerLayout(drawerLayout).build();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(toolbar, navController, appBarConfiguration);
+        NavigationView navView = findViewById(R.id.nav_view);
+        NavigationUI.setupWithNavController(navView, navController);
+        navView.setNavigationItemSelectedListener(this);
 
 
         // set volume buttons to control this application volume
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.application_exit) {
+            finish();
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
     }
 
     protected void onDestroy() {
