@@ -1,8 +1,10 @@
 package com.jmfavreau.pictoparle;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -10,11 +12,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.preference.PreferenceManager;
 
 import android.Manifest;
-import android.app.Fragment;
-import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +27,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -56,35 +60,93 @@ public class PictoParleActivity
     private NavController navController;
     private DrawerLayout drawerLayout;
     private AppBarConfiguration appBarConfiguration;
-    protected boolean manual;
+    protected boolean manualBoardOnScreen;
+    private boolean active_dark_screen;
+    private boolean active_board_detection;
+    private float screenWidthMM;
+    private float screenHeightMM;
+    private long interval_covered;
+    private long interval_uncovered;
+    protected RobustGestureDetector.RobustGestureDetectorParams params;
 
+    // a function to show explanation when asking permission
+    private void showExplanation(String title,
+                                 String message,
+                                 final String permission,
+                                 final int permissionRequestCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        requestPermission(permission, permissionRequestCode);
+                    }
+                });
+        builder.create().show();
+    }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    // a function to request permissions
+    private void requestPermission(String permissionName, int permissionRequestCode) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{permissionName}, permissionRequestCode);
+    }
+
+    private final int REQUEST_PERMISSION_CAMERA = 1;
+
+    // show a small message depending on the permission result
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode,
+            String permissions[],
+            int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSION_CAMERA:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Permission accordée.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Permission refusée.", Toast.LENGTH_SHORT).show();
+                }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // first of all, check permissions for camera
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            // TODO: send a message to the user, asking to give permissions
-            Log.w("PictoParle", "Permissions not granted");
-            // Permission is not granted
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_PHONE_STATE)) {
+                showExplanation("Permission requise", "Rationale",
+                        Manifest.permission.CAMERA, REQUEST_PERMISSION_CAMERA);
+            } else {
+                requestPermission(Manifest.permission.CAMERA, REQUEST_PERMISSION_CAMERA);
+            }
         }
 
         // set view container
         setContentView(R.layout.activity_fullscreen);
-        // TODO on va utiliser https://developer.android.com/reference/androidx/navigation/fragment/package-summary
 
-
-        boardSet = new BoardSet(getResources(), getPackageName());
-        lang = boardSet.getLang();
-
+        // the current fragment is not defined
         currentFragment = null;
 
-        boardDetector = new BoardDetector(this);
+        // by default, the board is not activated manually
+        manualBoardOnScreen = false;
 
-        boardDetector.setActive();
-        manual = false;
+        // load preferences
+        loadPreferences();
+
+        // create a board detector
+        boardDetector = new BoardDetector(this, active_board_detection,
+                interval_covered, interval_uncovered);
+
+        // load boards using the preferences (pictogram size)
+        loadBoards();
+
+        // the default language is the language defined in the boards
+        lang = boardSet.getLang();
 
         // set text-to-speech method with the good language
         tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
@@ -119,11 +181,33 @@ public class PictoParleActivity
 
     }
 
+    private void loadPreferences() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        active_dark_screen = preferences.getBoolean("darkscreen", true);
+
+        active_board_detection = preferences.getBoolean("board_detection", true);
+
+        screenWidthMM = Float.parseFloat(preferences.getString("screen_width_mm", "216"));
+        screenHeightMM = Float.parseFloat(preferences.getString("screen_height_mm", "135"));
+
+        interval_covered = Integer.parseInt(preferences.getString("interval_covered", "4000"));
+        interval_uncovered = Integer.parseInt(preferences.getString("interval_uncovered", "1000"));
+
+        params = new RobustGestureDetector.RobustGestureDetectorParams(
+                Integer.parseInt(preferences.getString("double_tap_timeout", "700")),
+                Integer.parseInt(preferences.getString("tap_timeout", "150")),
+                4096, 128);
+
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.run_board_manual) {
+        if (id == R.id.display_preferences) {
+            navController.navigate(R.id.view_preferences);
+        }
+        else if (id == R.id.run_board_manual) {
             forceManualBoardDown();
         }
         else if (id == R.id.application_exit) {
@@ -135,7 +219,7 @@ public class PictoParleActivity
     }
 
     private void forceManualBoardDown() {
-        manual = true;
+        manualBoardOnScreen = true;
         onBoardDown();
     }
 
@@ -153,14 +237,13 @@ public class PictoParleActivity
 
 
     public void setScreenVisible(boolean visible) {
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        if (visible) {
-            params.screenBrightness = -1;
-        }
-        else {
-            params.screenBrightness = 0;
-        }
-        getWindow().setAttributes(params);
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            if ((!active_dark_screen) || visible) {
+                params.screenBrightness = -1;
+            } else {
+                params.screenBrightness = 0;
+            }
+            getWindow().setAttributes(params);
 
     }
 
@@ -242,5 +325,65 @@ public class PictoParleActivity
 
     public void back() {
         Navigation.findNavController(findViewById(R.id.nav_host_fragment)).popBackStack();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (hasFocus)
+            fullScreen();
+    }
+
+    public void setActiveDarkscreen(boolean newValue) {
+        active_dark_screen = newValue;
+    }
+
+    public void setActiveBoardDetection(boolean activeBoardDetection) {
+        active_board_detection = activeBoardDetection;
+        boardDetector.forceInactive(!active_board_detection);
+    }
+
+    public void setScreenWidthMM(float screenWidthMM) {
+        this.screenWidthMM = screenWidthMM;
+        updateScreenSize();
+    }
+
+    public void setScreenHeightMM(float screenHeightMM) {
+        this.screenHeightMM = screenHeightMM;
+        updateScreenSize();
+    }
+
+    public void setIntervalCovered(long intervalCovered) {
+        this.interval_covered = intervalCovered;
+        boardDetector.setIntervalCovered(intervalCovered);
+    }
+    public void setIntervalUncovered(long intervalUncovered) {
+        this.interval_uncovered = intervalUncovered;
+        boardDetector.setIntervalUncovered(intervalUncovered);
+    }
+
+    public void setDoubleTapTimeout(int double_tap_timeout) {
+        this.params.doubleTapTimeout = double_tap_timeout;
+    }
+    public void setTapTimeout(int tap_timeout) {
+        this.params.tapTimeout = tap_timeout;
+    }
+
+
+    private void updateScreenSize() {
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getRealSize(size);
+        // create boardSet from resources
+        float xdpmm = (float) size.x / screenWidthMM;
+        float ydpmm = (float) size.y / screenHeightMM;
+        boardSet.updateSizes(xdpmm, ydpmm);
+    }
+
+    public void loadBoards() {
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getRealSize(size);
+        // create boardSet from resources
+        float xdpmm = (float) size.x / screenWidthMM;
+        float ydpmm = (float) size.y / screenHeightMM;
+        boardSet = new BoardSet(getResources(), getPackageName(), xdpmm, ydpmm);
     }
 }

@@ -5,16 +5,20 @@
         android:label="PictoParle"
         android:name="com.jmfavreau.pictoparle.HomeFragment">
         <action android:id="@+id/select_in_list"
-            app:destination="@+id/board_list_fragment" />
+            app:destination="@id/board_list_fragment" />
         <action android:id="@+id/view_board_from_home"
-            app:destination="@+id/picto_board" />
+            app:destination="@id/picto_board" />
+        <action android:id="@+id/view_preferences"
+            app:destination="@id/preferences" />
     </fragment>
     <fragment android:id="@+id/board_list_fragment"
         android:label="Choix d'une planche"
         android:name="com.jmfavreau.pictoparle.BoardListFragment">
             <action android:id="@+id/view_board_from_board_list"
-                app:destination="@+id/picto_board" />
+                app:destination="@id/picto_board" />
     </fragment>
     <fragment android:id="@+id/picto_board"
         android:name="com.jmfavreau.pictoparle.BoardFragment"/>
+    <fragment android:id="@+id/preferences"
+        android:name="com.jmfavreau.pictoparle.SettingFragment" />
 </navigation>

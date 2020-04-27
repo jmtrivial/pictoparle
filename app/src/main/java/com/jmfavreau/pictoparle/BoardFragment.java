@@ -1,22 +1,14 @@
 package com.jmfavreau.pictoparle;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -41,7 +33,8 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
         views = new TreeMap<>();
         for(int i = 0; i != activity.boardSet.size(); i++) {
             views.put(activity.boardSet.get(i).id, new BoardView(activity,
-                    activity.boardSet.get(i), activity.tts, activity));
+                    activity.boardSet.get(i), activity.tts, activity,
+                    activity.params));
         }
 
         view = new FrameLayout(getContext());
@@ -72,9 +65,9 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
         int selected = activity.boardSet.getSelected();
         view.removeAllViews();
         boardView = views.get(selected);
-        if (activity.manual) {
+        if (activity.manualBoardOnScreen) {
             boardView.setManual(true);
-            activity.manual = false;
+            activity.manualBoardOnScreen = false;
         }
         else {
             boardView.setManual(false);

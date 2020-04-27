@@ -4,6 +4,9 @@
         <item
             android:id="@+id/run_board_manual"
             android:title="Afficher la planche" />
+        <item
+            android:id="@+id/display_preferences"
+            android:title="Préférences" />
     </group>
     <group>
         <item

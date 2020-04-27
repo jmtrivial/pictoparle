@@ -8,8 +8,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
 public class BoardSet {
 
@@ -17,8 +15,8 @@ public class BoardSet {
      * true DPI cannot be get from the Android API. Thus it is a parameter of the application
      */
     /* TODO: add a menu entry to change these values */
-    private float xdpi = 149.5F;
-    private float ydpi = 149.5F;
+    private float xdpmm;
+    private float ydpmm;
 
 
     protected ArrayList<Board> boards;
@@ -26,7 +24,9 @@ public class BoardSet {
 
     private String lang;
 
-    public BoardSet(Resources resources, String packagename) {
+    public BoardSet(Resources resources, String packagename, float xdpmm, float ydpmm) {
+        this.xdpmm = xdpmm;
+        this.ydpmm = ydpmm;
 
         // select default language
         lang = "fr";
@@ -62,7 +62,7 @@ public class BoardSet {
                             xrp.getAttributeValue(null, "name"),
                             "xml", packagename);
                     XmlResourceParser parser = resources.getXml(identifier);
-                    Board b = new Board(parser, xdpi, ydpi);
+                    Board b = new Board(parser, xdpmm, ydpmm);
                     if (b.isValid()) {
                         boards.add(b);
                     } else {
@@ -124,5 +124,13 @@ public class BoardSet {
                 return true;
         }
         return false;
+    }
+
+    public void updateSizes(float xdpmm, float ydpmm) {
+        this.xdpmm = xdpmm;
+        this.ydpmm = ydpmm;
+        for(int i = 0; i != boards.size(); i++) {
+            boards.get(i).updateSizes(xdpmm, ydpmm);
+        }
     }
 }

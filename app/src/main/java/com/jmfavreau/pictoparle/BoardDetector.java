@@ -1,8 +1,5 @@
 package com.jmfavreau.pictoparle;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -10,7 +7,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,8 +15,8 @@ public class BoardDetector {
     private boolean active;
     private boolean init;
     private boolean covered;
-    static final long interval_covered = 4000;
-    static final long interval_uncovered = 1000;
+    private long interval_covered;
+    private long interval_uncovered;
     Camera camera;
     Camera.PictureCallback imageProcessing;
     Timer timer;
@@ -28,14 +24,23 @@ public class BoardDetector {
     private SurfaceTexture surfaceTexture;
     private int width;
     private int height;
+    private boolean canBeActive;
 
 
-    public BoardDetector(final SimpleBoardListener listener) {
+    public BoardDetector(final SimpleBoardListener listener,
+                         boolean canBeActive,
+                         long interval_covered,
+                         long interval_uncovered) {
         this.listener = listener;
         // by default, the board detector is active
         active = true;
         // at the beginning, we don't know if the screen is covered or not
         init = true;
+        // the user can cancel the board detection
+        this.canBeActive = canBeActive;
+
+        this.interval_covered = interval_covered;
+        this.interval_uncovered = interval_uncovered;
 
         timer = new Timer();
         task = null;
@@ -48,7 +53,7 @@ public class BoardDetector {
                     if (init) {
                         if (cov)
                             listener.onBoardDown();
-                        setCovered(cov);
+                        runTimer(cov);
                         init = false;
                     }
                     else {
@@ -57,7 +62,8 @@ public class BoardDetector {
                                 listener.onBoardDown();
                             else
                                 listener.onRemovedBoard();
-                            setCovered(cov);
+                            Log.d("Pictoparle", "Detecting coverage change: " + covered);
+                            runTimer(cov);
                         }
                         else {
                             if (!covered) {
@@ -212,8 +218,7 @@ public class BoardDetector {
         }
     }
 
-    private void setCovered(boolean covered) {
-        Log.d("Pictoparle", "Detecting coverage change: " + covered);
+    private void runTimer(boolean covered) {
         this.covered = covered;
         // cancel the previous tasks
         stopTimer();
@@ -252,7 +257,7 @@ public class BoardDetector {
     }
 
     public void setActive() {
-        if (init || !this.active) {
+        if (canBeActive && (init || !this.active)) {
             Log.d("PictoParle", "set board detector active");
             initCamera();
             this.active = true;
@@ -261,7 +266,7 @@ public class BoardDetector {
                 checkCoverageAndQRCode();
             }
             else {
-                setCovered(covered);
+                runTimer(covered);
             }
         }
     }
@@ -275,9 +280,26 @@ public class BoardDetector {
         camera = null;
     }
 
-    public boolean isReady() {
-        return !init;
+
+    public void forceInactive(boolean value) {
+        if (value)
+            setInactive();
+        canBeActive = !value;
     }
+
+    public void setIntervalCovered(long intervalCovered) {
+        this.interval_covered = intervalCovered;
+        if (this.active) {
+            runTimer(this.covered);
+        }
+    }
+    public void setIntervalUncovered(long intervalUncovered) {
+        this.interval_uncovered = intervalUncovered;
+        if (this.active) {
+            runTimer(this.covered);
+        }
+    }
+
 
     public interface SimpleBoardListener {
         void onRemovedBoard();

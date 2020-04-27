@@ -27,7 +27,6 @@ class BoardView extends LinearLayout {
     private ImageButton closeButton;
     private Board board;
 
-    //private GestureDetector gestureDetector;
     private RobustGestureDetector gestureDetector;
 
     private float slideThreshold;
@@ -47,7 +46,9 @@ class BoardView extends LinearLayout {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public BoardView(Context context, Board board, TextToSpeech tts, PictoParleActivity pictoParleActivity) {
+    public BoardView(Context context, Board board, TextToSpeech tts,
+                     PictoParleActivity pictoParleActivity,
+                     RobustGestureDetector.RobustGestureDetectorParams params) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
         this.board = board;
@@ -101,13 +102,8 @@ class BoardView extends LinearLayout {
 
         // slide threshold correspond to the diagonal of a pictogram
         slideThreshold = board.cellHeightPX * board.cellHeightPX + board.cellWidthPX + board.cellWidthPX;
-        //gestureDetector = new GestureDetector(context, new GestureListener());
-        gestureDetector = new RobustGestureDetector(context, new GestureListener());
+        gestureDetector = new RobustGestureDetector(context, new GestureListener(), params);
 
-
-
-
-        // TODO: add here a button to open a menu
     }
 
 

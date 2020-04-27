@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 class Board {
 
+    private double cellWidth;
+    private double cellHeight;
     public int cellWidthPX;
     public int cellHeightPX;
 
@@ -20,20 +22,20 @@ class Board {
     public int id;
     private ArrayList<ArrayList<Pictogram>> cells;
 
-    private float xdpi;
-    private float ydpi;
+    private float xdpmm;
+    private float ydpmm;
 
-    public Board(XmlResourceParser parser, float xdpi, float ydpi) throws IOException, XmlPullParserException {
-        this.xdpi = xdpi;
-        this.ydpi = ydpi;
+    public Board(XmlResourceParser parser, float xdpmm, float ydpmm) throws IOException, XmlPullParserException {
+        this.xdpmm = xdpmm;
+        this.ydpmm = ydpmm;
         do {
                 if (parser.getEventType() == XmlResourceParser.START_TAG) {
                     switch (parser.getName()) {
                         case "board":
                             this.name = parser.getAttributeValue(null, "name");
 
-                            double cellWidth = Double.parseDouble(parser.getAttributeValue(null, "cellWidth"));
-                            double cellHeight = Double.parseDouble(parser.getAttributeValue(null, "cellHeight"));
+                            cellWidth = Double.parseDouble(parser.getAttributeValue(null, "cellWidth"));
+                            cellHeight = Double.parseDouble(parser.getAttributeValue(null, "cellHeight"));
 
                             this.cellWidthPX = toPXX(cellWidth);
                             this.cellHeightPX = toPXY(cellHeight);
@@ -65,12 +67,12 @@ class Board {
     }
 
     private int toPXX(double value) {
-        // convert mm to inch, then apply dpi ratio
-        return (int) (value * 0.03937 * xdpi);
+        // convert mm to dot
+        return (int) (value * xdpmm);
     }
     private int toPXY(double value) {
-        // convert mm to inch, then apply dpi ratio
-        return (int) (value * 0.03937 * ydpi);
+        // convert mm to dot
+        return (int) (value * ydpmm);
     }
 
     Boolean isValid() {
@@ -84,5 +86,12 @@ class Board {
             return Pictogram.empty();
         else
             return this.cells.get(i).get(j);
+    }
+
+    public void updateSizes(float xdpmm, float ydpmm) {
+        this.xdpmm = xdpmm;
+        this.ydpmm = ydpmm;
+        this.cellWidthPX = toPXX(cellWidth);
+        this.cellHeightPX = toPXY(cellHeight);
     }
 }

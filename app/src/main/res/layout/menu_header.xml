@@ -25,4 +25,5 @@
         android:paddingTop="16dp"
         android:text="PictoParle"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
 </LinearLayout>

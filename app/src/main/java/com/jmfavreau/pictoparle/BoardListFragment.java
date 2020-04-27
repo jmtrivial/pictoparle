@@ -93,7 +93,7 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
         return view;
     }
 
-        @Override
+    @Override
     public void onResume() {
         activity.tts.speak("Choisi une planche",  TextToSpeech.QUEUE_FLUSH, null);
         super.onResume();

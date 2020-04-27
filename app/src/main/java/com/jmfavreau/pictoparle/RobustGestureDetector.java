@@ -2,6 +2,7 @@ package com.jmfavreau.pictoparle;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
@@ -15,11 +16,8 @@ import java.util.Map;
  *
  */
 public class RobustGestureDetector {
-    private final int scaledTouchSlop2;
     private final SimpleOnGestureListener gestureListener;
-    private final int doubleTapTimeout;
-    private final int tapTimeout;
-    private final int minSlide2;
+    private final RobustGestureDetectorParams params;
     private Context context;
 
 
@@ -80,7 +78,9 @@ public class RobustGestureDetector {
     private Map<Integer, DownEvent> openTaps;
 
 
-    public RobustGestureDetector(Context context, SimpleOnGestureListener gestureListener) {
+    public RobustGestureDetector(Context context,
+                                 SimpleOnGestureListener gestureListener,
+                                 RobustGestureDetectorParams params) {
         this.context = context;
         this.gestureListener = gestureListener;
 
@@ -88,11 +88,7 @@ public class RobustGestureDetector {
         this.openTaps = new HashMap<>();
 
         /* parameters for taps */
-        ViewConfiguration conf = ViewConfiguration.get(context);
-        this.doubleTapTimeout = 700; /* max time between two taps */
-        this.tapTimeout = 150;
-        this.scaledTouchSlop2 = 64 * 64; /* max distance between down and up */
-        this.minSlide2 = 128; // TODO: define it depending on the pictogram sizes
+        this.params = params;
     }
 
 
@@ -113,9 +109,8 @@ public class RobustGestureDetector {
         float dist = -1;
         for(int i = 0; i != shortTaps.size(); ) {
             float d = shortTaps.get(i).distance2(x, y);
-
-            if (time < shortTaps.get(i).time + this.doubleTapTimeout) {
-                if ((d < this.scaledTouchSlop2) && ((dist == -1) || (dist > d))) {
+            if (time < shortTaps.get(i).time + this.params.doubleTapTimeout) {
+                if ((d < this.params.scaledTouchSlop2) && ((dist == -1) || (dist > d))) {
                     dist = d;
                     idBest = i;
                 }
@@ -156,7 +151,7 @@ public class RobustGestureDetector {
             long diffTime = time - down.downTime;
             // first check if it is a tap
 
-            if (diffTime < this.tapTimeout) {
+            if (diffTime < this.params.tapTimeout) {
                 // do not consider the movement, to focus only in duration
                 ShortTap tap = new ShortTap(time, x, y);
 
@@ -173,7 +168,7 @@ public class RobustGestureDetector {
                 float distance2 = (x - down.downX) * (x - down.downX) +
                         (y - down.downY) * (y - down.downY);
                 // a long distance is a slide
-                if (distance2 > this.minSlide2 && down.single) {
+                if (distance2 > this.params.minSlide2 && down.single) {
                     gestureListener.onLargeMoveSingleFinger(event, down.downX, down.downY);
                 }
 
@@ -231,4 +226,21 @@ public class RobustGestureDetector {
         }
     }
 
+    static public class RobustGestureDetectorParams {
+        public int doubleTapTimeout; /* max time between two taps */
+        public int tapTimeout;
+        public int scaledTouchSlop2; /* square value of max distance between down and up */
+        public int minSlide2;
+
+        public RobustGestureDetectorParams(int doubleTapTimeout,
+                                           int tapTimeout,
+                                           int scaledTouchSlop2,
+                                           int minSlide2) {
+            this.doubleTapTimeout = doubleTapTimeout;
+            this.tapTimeout = tapTimeout;
+            this.scaledTouchSlop2 = scaledTouchSlop2;
+            this.minSlide2 = minSlide2;
+        }
+
+    }
 }

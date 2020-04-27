@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- PreferenceCategory android:title="Audio">
+        <ListPreference
+            app:key="audio_mode"
+            app:title="Mode privilégié"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/audio_mode_entries"
+            app:entryValues="@array/audio_mode_entry_values"
+            app:defaultValue="1"
+            app:dialogTitle="Mode à privilégier pour chaque contenu énoncé, suivant la disponibilité de la source."/>
+
+        <ListPreference
+            app:key="verbosity"
+            app:title="Verbosité"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/verbosity_entries"
+            app:entryValues="@array/verbosity_entry_values"
+            app:defaultValue="1"
+            app:dialogTitle="Verbosité des contenus énoncés." />
+    </PreferenceCategory-->
+
+
+    <PreferenceCategory android:title="Interactions">
+        <EditTextPreference
+            android:key="tap_timeout"
+            android:inputType="numberDecimal"
+            android:title="Durée maximum d'un tap (en milliseconde)"
+            android:summary="Durée maximum pour laquelle un doigt fixe sur la tablette est considérée comme un tap."
+            android:defaultValue="150"
+            />
+
+        <EditTextPreference
+            android:key="double_tap_timeout"
+            android:inputType="numberDecimal"
+            android:title="Durée maximum d'un double tap (en milliseconde)"
+            android:summary="Durée maximum entre le premier et le deuxième tap."
+            android:defaultValue="700"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Détection des planches">
+        <CheckBoxPreference
+            android:key="board_detection"
+            android:title="Détection"
+            android:summary="Utiliser la caméra pour détecter la présence d'une planche sur la tablette."
+            android:defaultValue="true" />
+
+        <EditTextPreference
+            android:key="interval_covered"
+            android:inputType="numberDecimal"
+            android:title="Intervalle de détection de recouvrement (en milliseconde)"
+            android:summary="Intervalle entre deux vérifications du recouvrement de la tablette par une planche."
+            android:defaultValue="4000"
+            />
+
+        <EditTextPreference
+            android:key="interval_uncovered"
+            android:inputType="numberDecimal"
+            android:title="Intervalle de détection de découvrement (en milliseconde)"
+            android:summary="Intervalle entre deux vérifications du découvrement de la tablette par une planche."
+            android:defaultValue="1000"
+            />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory android:title="Affichage">
+
+        <CheckBoxPreference
+            android:key="darkscreen"
+            android:title="Luminosité réduite"
+            android:summary="Pour économiser l'énergie de la tablette, on peur réduire la luminosité de l'écran quand il affiche une planche."
+            android:defaultValue="true" />
+
+        <EditTextPreference
+            android:key="screen_width_mm"
+            android:inputType="numberDecimal"
+            android:title="Largeur de l'écran (en millimètre)"
+            android:summary="Pour ajuster la taille réelle des pictogrammes, PictoParle a besoin de connaître la largeur écran de la tablette."
+            android:defaultValue="216"
+            />
+        <EditTextPreference
+            android:key="screen_height_mm"
+            android:inputType="numberDecimal"
+            android:title="Longueur de la ligne verticale (en millimètre)"
+            android:summary="Pour ajuster la taille réelle des pictogrammes, PictoParle a besoin de connaître la hauteur écran de la tablette."
+            android:defaultValue="135"
+            />
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
