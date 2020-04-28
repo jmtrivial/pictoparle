@@ -141,7 +141,9 @@ public class PictoParleActivity
         loadPreferences();
 
         // create a board detector
-        boardDetector = new BoardDetector(this, active_board_detection,
+        boardDetector = new BoardDetector(this,
+                this,
+                active_board_detection,
                 interval_covered, interval_uncovered);
 
         // load boards using the preferences (pictogram size)

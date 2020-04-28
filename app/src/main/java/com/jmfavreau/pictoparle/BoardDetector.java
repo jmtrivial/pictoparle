@@ -1,9 +1,11 @@
 package com.jmfavreau.pictoparle;
 
+import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,9 +27,12 @@ public class BoardDetector {
     private int width;
     private int height;
     private boolean canBeActive;
+    private boolean errorOnCreation;
+    private Context context;
 
 
     public BoardDetector(final SimpleBoardListener listener,
+                         Context context,
                          boolean canBeActive,
                          long interval_covered,
                          long interval_uncovered) {
@@ -38,6 +43,9 @@ public class BoardDetector {
         init = true;
         // the user can cancel the board detection
         this.canBeActive = canBeActive;
+        // an error can occur on creation. In this case, we will never use the camera
+        errorOnCreation = false;
+        this.context = context;
 
         this.interval_covered = interval_covered;
         this.interval_uncovered = interval_uncovered;
@@ -117,6 +125,7 @@ public class BoardDetector {
                         return Camera.open(camIdx);
                     } catch (RuntimeException e) {
                         Log.e("PictoParle", "Camera failed to open: " + e.getLocalizedMessage());
+                        return null;
                     }
                 }
             }
@@ -132,10 +141,17 @@ public class BoardDetector {
         return null; // returns null if camera is unavailable
     }
 
+    private void setErrorInActivation() {
+        errorOnCreation = true;
+        camera = null;
+        active = false;
+        Toast.makeText(context, "Impossible d'activer la caméra. La détection de planche n'est pas possible.", Toast.LENGTH_SHORT).show();
+    }
+
     private void initCamera() {
         Log.d("PictoParle", "init camera");
 
-        if (camera != null && !active) {
+        if (!errorOnCreation && camera != null && !active) {
             camera.stopPreview();
             camera.release();
             camera = null;
@@ -143,14 +159,20 @@ public class BoardDetector {
 
         if (camera == null) {
             camera = getCameraInstance();
+
         }
-        if (camera != null) {
+        if (camera == null) {
+            setErrorInActivation();
+        }
+        else {
             // create a surface to get resulting images
-            surfaceTexture = new SurfaceTexture(10);
             try {
+                surfaceTexture = new SurfaceTexture(10);
                 camera.setPreviewTexture(surfaceTexture);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e("PictoParle", "Cannot create a surface texture");
+                setErrorInActivation();
+                return;
             }
 
             // set parameters
@@ -164,7 +186,7 @@ public class BoardDetector {
                 param.setAntibanding(Camera.Parameters.ANTIBANDING_OFF);
             }
 
-            // set white ballance
+            // set white balance
             if (param.getWhiteBalance() != null) {
                 param.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_CLOUDY_DAYLIGHT);
             }
@@ -245,6 +267,7 @@ public class BoardDetector {
         }
         else {
             Log.d("PictoParle", "No camera available");
+            setErrorInActivation();
         }
     }
 
@@ -257,7 +280,7 @@ public class BoardDetector {
     }
 
     public void setActive() {
-        if (canBeActive && (init || !this.active)) {
+        if (!errorOnCreation && canBeActive && (init || !this.active)) {
             Log.d("PictoParle", "set board detector active");
             initCamera();
             this.active = true;
