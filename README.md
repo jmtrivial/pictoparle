@@ -17,3 +17,6 @@ A (almost) weekly development logs is provided on the author's blog (in french):
 
 * [First sprint](https://blog.jmtrivial.info/2020/04/14/pictoparle-premier-sprint/) on April 14, 2020
 * [Second sprint](https://blog.jmtrivial.info/2020/04/19/pictoparle-deuxieme-sprint/) on April 20, 2020
+
+See [todolist](TODOLIST.md) for the future developments.
+
