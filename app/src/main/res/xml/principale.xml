@@ -5,7 +5,7 @@
             <pictogram txt="oui" image="oui" />
             <pictogram txt="non" image="non" />
             <pictogram txt="pourquoi" image="pourquoi" />
-            <pictogram txt="j'ai besoin d'aide" image="jai_besoin" />
+            <pictogram txt="j'ai besoin d'aide" image="besoin_aide" />
         </row>
         <row>
             <pictogram txt="j'aime" image="jaime" />
@@ -15,7 +15,7 @@
         </row>
         <row>
             <pictogram txt="boire" image="boire" />
-            <pictogram txt="" image="" />
+            <pictogram txt="je veux, j'ai besoin" image="jai_besoin" />
             <pictogram txt="quelle heure est-il?" image="" />
             <pictogram txt="partir" image="partir" />
         </row>
