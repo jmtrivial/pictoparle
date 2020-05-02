@@ -296,8 +296,10 @@ public class PictoParleActivity
         }
         else {
             // go back to the last activity
-            if (currentFragment != null)
+            if (currentFragment != null) {
+                drawerLayout.closeDrawer(GravityCompat.START);
                 currentFragment.onBoardDown();
+            }
             else
                 Log.d("PictoParle", "unable to detect the active fragment");
         }
