@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<board cellWidth="50" cellHeight="40" id="3" name="activités">
+<board id="3" name="activités" layout="vertical">
+    <cells cellWidth="31.25" cellHeight="25">
+        <row><pictogram txt="oui" image="oui" /></row>
+        <row><pictogram txt="non" image="non" /></row>
+        <row><pictogram txt="fini" image="fini" /></row>
+        <row><pictogram txt="je veux, j'ai besoin" image="jai_besoin" /></row>
+        <row><pictogram txt="toilettes" image="toilettes" /></row>
+    </cells>
     <cells>
+        <quit width="10" height="10" />
+    </cells>
+    <cells cellWidth="50" cellHeight="40">
         <row>
             <pictogram txt="arts plastiques" image="arts_plastiques" />
             <pictogram txt="jeux de société" image="jeux_de_societe" />
             <pictogram txt="lire un livre" image="lire_un_livre" />
-            <pictogram txt="écouter un disque" image="ecouter_musique" />
         </row>
         <row>
             <pictogram txt="câlin" image="calin" />
-            <pictogram txt="" image="" />
-            <pictogram txt="saxophone" image="saxophone" />
+            <pictogram txt="écouter un disque" image="ecouter_musique" />
             <pictogram txt="histoire" image="histoire" />
         </row>
         <row>
             <pictogram txt="équitation" image="equitation" />
-            <pictogram txt="" image="" />
-            <pictogram txt="" image="" />
+            <pictogram txt="saxophone" image="saxophone" />
             <pictogram txt="ranger" image="ranger" />
         </row>
     </cells>

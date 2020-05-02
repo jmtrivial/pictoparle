@@ -3,8 +3,10 @@
     <board name="principale" />
     <board name="activites" />
     <board name="lieux" />
+    <board name="proches" />
+    <board name="famille" />
     <board name="objets" />
-    <board name="personnes" />
+    <board name="animaux" />
     <board name="raconter" />
     <board name="sentiments" />
 </boards>

@@ -24,7 +24,7 @@ class PictoButton extends View {
     }
 
     public PictoButton(Context context, @NotNull AudioRenderer audioRenderer,
-                       @NotNull Pictogram pictogram, @NotNull Board board,
+                       @NotNull Pictogram pictogram, int width, int height,
                        RobustGestureDetector.RobustGestureDetectorParams params) {
         super(context);
 
@@ -37,7 +37,7 @@ class PictoButton extends View {
             Drawable image = getResources().getDrawable(id);
             setBackground(image);
         }
-        setLayoutParams(new ActionBar.LayoutParams(board.cellWidthPX, board.cellHeightPX));
+        setLayoutParams(new ActionBar.LayoutParams(width, height));
 
         gestureDetector = new RobustGestureDetector(context, new PictoButton.GestureListener(), params);
 
@@ -93,6 +93,6 @@ class PictoButton extends View {
         }
 
     }
-    
+
 
 }

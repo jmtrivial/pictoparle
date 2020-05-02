@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<board id="1" name="principale" orientation="horizontal">
+<board id="8" name="animaux" orientation="vertical">
     <cells cellWidth="31.25" cellHeight="25">
         <row><pictogram txt="oui" image="oui" /></row>
         <row><pictogram txt="non" image="non" /></row>
@@ -12,19 +12,20 @@
     </cells>
     <cells cellWidth="50" cellHeight="40">
         <row>
-            <pictogram txt="pourquoi" image="pourquoi" />
-            <pictogram txt="j'ai besoin d'aide" image="besoin_aide" />
+            <pictogram txt="chien" image="chien" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <quit width="auto" height="auto" /> <!-- in the interlines of buttons -->
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
             <pictogram txt="" image="" />
         </row>
         <row>
-            <pictogram txt="j'aime" image="jaime" />
-            <pictogram txt="je n'aime pas" image="je_naime_pas" />
-            <pictogram txt="difficile" image="difficile" />
-        </row>
-        <row>
-            <pictogram txt="boire" image="boire" />
-            <pictogram txt="quelle heure est-il?" image="" />
-            <pictogram txt="partir" image="partir" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
         </row>
     </cells>
 </board>
