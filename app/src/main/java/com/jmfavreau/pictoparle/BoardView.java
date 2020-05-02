@@ -65,7 +65,7 @@ class BoardView extends LinearLayout {
         for (int i = 0; i != board.panels.size(); ++i) {
             if (i != 0)
                 addSpacer(space);
-            addPanel(board.panels.get(i), params);
+            addPanel(board.panels.get(i), params, board.panels.size() == 1);
 
         }
     }
@@ -101,8 +101,9 @@ class BoardView extends LinearLayout {
 
 
     private void addPanel(BoardPanel panel,
-                          RobustGestureDetector.RobustGestureDetectorParams params) {
-        int spanPX = computeSpanSize(panel); // TODO: if single panel, full width
+                          RobustGestureDetector.RobustGestureDetectorParams params,
+                          boolean single) {
+        Point span = computeSpanSize(panel, single);
 
         LinearLayout pView = new LinearLayout(context);
         pView.setOrientation(LinearLayout.VERTICAL);
@@ -118,7 +119,7 @@ class BoardView extends LinearLayout {
             for(int j = 0; j != panel.nbColumns; ++j) {
                 if (j != 0) {
                     Space spacer = new Space(context);
-                    spacer.setLayoutParams(new ActionBar.LayoutParams(spanPX, panel.cellHeightPX));
+                    spacer.setLayoutParams(new ActionBar.LayoutParams(span.x, panel.cellHeightPX));
                     row.addView(spacer);
                 }
 
@@ -133,12 +134,12 @@ class BoardView extends LinearLayout {
                 }
             }
             if (i != 0) {
-                addHorizontalSpacer(pView, panel, spanPX, i);
+                addHorizontalSpacer(pView, panel, span.x, span.y, i);
             }
         }
 
         if (panel.nbRows == 0 && panel.hasQuitButton()) {
-            addHorizontalSpacer(pView, panel, spanPX, -1);
+            addHorizontalSpacer(pView, panel, span.x, span.y, -1);
         }
 
 
@@ -146,13 +147,15 @@ class BoardView extends LinearLayout {
 
     }
 
-    private void addHorizontalSpacer(LinearLayout pView, BoardPanel panel, int spanPX, int row) {
+    private void addHorizontalSpacer(LinearLayout pView, BoardPanel panel,
+                                     int spanPX, int spanPY,
+                                     int row) {
         LinearLayout spaceRow = new LinearLayout(context);
         spaceRow.setOrientation(LinearLayout.HORIZONTAL);
         pView.addView(spaceRow);
 
         Space spacer = new Space(context);
-        spacer.setLayoutParams(new ActionBar.LayoutParams(panel.cellWidthPX, spanPX));
+        spacer.setLayoutParams(new ActionBar.LayoutParams(panel.cellWidthPX, spanPY));
         spaceRow.addView(spacer);
 
         if (panel.hasQuitButton() && (row == panel.nbRows - 1 - panel.getRowPositionQuitButton())) {
@@ -163,7 +166,7 @@ class BoardView extends LinearLayout {
             int sizeX = panel.widthQuitButtonPX;
             int sizeY = panel.heightQuitButtonPX;
             if (sizeX <= 0) sizeX = spanPX;
-            if (sizeY <= 0) sizeY = spanPX;
+            if (sizeY <= 0) sizeY = spanPY;
             closeButton.setLayoutParams(new ActionBar.LayoutParams(sizeX, sizeY));
             closeButton.setBackgroundColor(Color.WHITE);
             closeButton.setVisibility(View.INVISIBLE);
@@ -191,30 +194,25 @@ class BoardView extends LinearLayout {
                 return 0;
         }
         else {
-            int space = computeSpanSize(panel);
+            Point span = computeSpanSize(panel, false);
             if (horizontal)
-                return panel.nbColumns * (panel.cellWidthPX + space) - space;
+                return panel.nbColumns * (panel.cellWidthPX + span.x) - span.x;
             else
-                return panel.nbRows * (panel.cellHeightPX + space) - space;
+                return panel.nbRows * (panel.cellHeightPX + span.y) - span.y;
         }
     }
 
-    private int computeSpanSize(BoardPanel panel) {
+    private Point computeSpanSize(BoardPanel panel, boolean single) {
         Point size = new Point();
         activity.getWindowManager().getDefaultDisplay().getRealSize(size);
 
-
-        int res;
-        if (horizontal) {
-            res = (int) Math.floor(((float) size.y - panel.nbRows * panel.cellHeightPX) / (panel.nbRows - 1));
+        int x = (int) Math.floor(((float) size.x - panel.nbColumns * panel.cellWidthPX) / (panel.nbColumns - 1));
+        int y = (int) Math.floor(((float) size.y - panel.nbRows * panel.cellHeightPX) / (panel.nbRows - 1));
+        if (!single) {
+            if (horizontal) { x = y; }
+            else { y = x; }
         }
-        else {
-            res = (int) Math.floor(((float) size.x - panel.nbColumns * panel.cellWidthPX) / (panel.nbColumns - 1));
-        }
-
-        if (res < 0)
-            res = 0;
-        return res;
+        return new Point(x, y);
     }
 
 
