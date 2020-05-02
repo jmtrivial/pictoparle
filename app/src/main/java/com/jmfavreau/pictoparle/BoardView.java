@@ -22,8 +22,6 @@ class BoardView extends LinearLayout {
     private ImageButton closeButton;
     private Board board;
 
-    private RobustGestureDetector gestureDetector;
-
     private ArrayList<PictoButton> buttons;
 
     private PictoParleActivity activity;
@@ -59,7 +57,8 @@ class BoardView extends LinearLayout {
                     spacer.setLayoutParams(new ActionBar.LayoutParams(horizontalSpanPX, board.cellHeightPX));
                     row.addView(spacer);
                 }
-                PictoButton picto = new PictoButton(context, activity.audioRenderer, board.getPictogram(i, j), board);
+                PictoButton picto = new PictoButton(context, activity.audioRenderer,
+                        board.getPictogram(i, j), board, params);
                 buttons.add(picto);
                 row.addView(picto);
             }
@@ -91,7 +90,6 @@ class BoardView extends LinearLayout {
             }
         }
 
-        gestureDetector = new RobustGestureDetector(context, new GestureListener(), params);
 
     }
 
@@ -108,10 +106,6 @@ class BoardView extends LinearLayout {
             horizontalSpanPX = 0;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        return gestureDetector.onTouchEvent(e);
-    }
 
     public void setManual(boolean b) {
         if (b) {
@@ -121,46 +115,6 @@ class BoardView extends LinearLayout {
             closeButton.setVisibility(View.INVISIBLE);
         }
 
-    }
-
-
-    //private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-    class GestureListener extends RobustGestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        }
-
-        // event when double tap occurs
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            // detect if it is inside a button
-            int x = (int) e.getX(e.getActionIndex());
-            int y = (int) e.getY(e.getActionIndex());
-            PictoButton picto = getPictogramAtXY(x, y);
-            if (picto != null)
-                picto.playSound();
-            return true;
-        }
-
-        @Override
-        public boolean onLongPress(MotionEvent e) {
-            // will be used for the menu button
-            return false;
-        }
-
-    }
-
-    private PictoButton getPictogramAtXY(int x, int y) {
-        Rect region = new Rect();
-        for(int i = 0; i != buttons.size(); ++i) {
-            buttons.get(i).getRectOnScreen(region);
-            if (region.contains(x, y)) {
-                return buttons.get(i);
-            }
-        }
-        return null;
     }
 
 

@@ -5,12 +5,16 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.speech.tts.TextToSpeech;
+import android.view.MotionEvent;
 import android.view.View;
 
 import org.jetbrains.annotations.NotNull;
 
 class PictoButton extends View {
     private Pictogram pictogram;
+
+    private RobustGestureDetector gestureDetector;
+
 
     private AudioRenderer audioRenderer;
 
@@ -19,7 +23,9 @@ class PictoButton extends View {
         super(context);
     }
 
-    public PictoButton(Context context, @NotNull AudioRenderer audioRenderer, @NotNull Pictogram pictogram, @NotNull Board board) {
+    public PictoButton(Context context, @NotNull AudioRenderer audioRenderer,
+                       @NotNull Pictogram pictogram, @NotNull Board board,
+                       RobustGestureDetector.RobustGestureDetectorParams params) {
         super(context);
 
         this.pictogram = pictogram;
@@ -32,6 +38,8 @@ class PictoButton extends View {
             setBackground(image);
         }
         setLayoutParams(new ActionBar.LayoutParams(board.cellWidthPX, board.cellHeightPX));
+
+        gestureDetector = new RobustGestureDetector(context, new PictoButton.GestureListener(), params);
 
     }
 
@@ -53,4 +61,38 @@ class PictoButton extends View {
         int h = getHeight();
         region.set(x, y, x + w, y + h);
     }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        return gestureDetector.onTouchEvent(e);
+    }
+
+    //private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+    class GestureListener extends RobustGestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        // event when double tap occurs
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            // detect if it is inside a button
+            int x = (int) e.getX(e.getActionIndex());
+            int y = (int) e.getY(e.getActionIndex());
+            playSound();
+            return true;
+        }
+
+        @Override
+        public boolean onLongPress(MotionEvent e) {
+            // will be used for the menu button
+            return false;
+        }
+
+    }
+    
+
 }
