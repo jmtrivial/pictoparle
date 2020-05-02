@@ -2,16 +2,13 @@ package com.jmfavreau.pictoparle;
 
 import android.app.ActionBar;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
-import android.speech.tts.TextToSpeech;
 
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -19,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 
 import androidx.annotation.RequiresApi;
-import androidx.navigation.Navigation;
 
 
 import java.util.ArrayList;
@@ -29,8 +25,6 @@ class BoardView extends LinearLayout {
     private Board board;
 
     private RobustGestureDetector gestureDetector;
-
-    private float slideThreshold;
 
     private ArrayList<PictoButton> buttons;
 
@@ -100,8 +94,6 @@ class BoardView extends LinearLayout {
             }
         }
 
-        // slide threshold correspond to the diagonal of a pictogram
-        slideThreshold = board.cellHeightPX * board.cellHeightPX + board.cellWidthPX + board.cellWidthPX;
         gestureDetector = new RobustGestureDetector(context, new GestureListener(), params);
 
     }
@@ -154,37 +146,6 @@ class BoardView extends LinearLayout {
             if (picto != null)
                 picto.playSound();
             return true;
-        }
-
-        @Override
-        public boolean onLargeMoveSingleFinger(MotionEvent e, float prevX, float prevY) {
-            boolean result = false;
-            float diffX = e.getX(e.getActionIndex()) - prevX;
-            float diffY = e.getY(e.getActionIndex()) - prevY;
-            float distance2 = (diffX * diffX + diffY * diffY);
-            if (distance2 > slideThreshold) {
-                if (Math.abs(diffX) < Math.abs(diffY)) {
-                    if (diffY < 0) {
-                        activity.setScreenVisible(true);
-                    } else {
-                        activity.setScreenVisible(false);
-                    }
-                    result = true;
-                }
-                else {
-                    // send application to back
-                    boolean sentAppToBackground = activity.moveTaskToBack(true);
-
-                    if(!sentAppToBackground){
-                        Intent i = new Intent();
-                        i.setAction(Intent.ACTION_MAIN);
-                        i.addCategory(Intent.CATEGORY_HOME);
-                        activity.startActivity(i);
-                    }
-
-                }
-            }
-            return result;
         }
 
         @Override

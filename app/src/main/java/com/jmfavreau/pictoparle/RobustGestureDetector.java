@@ -164,15 +164,6 @@ public class RobustGestureDetector {
                     shortTaps.add(tap);
                 }
             }
-            else {
-                float distance2 = (x - down.downX) * (x - down.downX) +
-                        (y - down.downY) * (y - down.downY);
-                // a long distance is a slide
-                if (distance2 > this.params.minSlide2 && down.single) {
-                    gestureListener.onLargeMoveSingleFinger(event, down.downX, down.downY);
-                }
-
-            }
 
             // finally remove the beginning
             openTaps.remove(pointerID);
@@ -221,9 +212,6 @@ public class RobustGestureDetector {
             return false;
         }
 
-        public boolean onLargeMoveSingleFinger(MotionEvent e, float prevX, float prevY) {
-            return false;
-        }
     }
 
     static public class RobustGestureDetectorParams {
