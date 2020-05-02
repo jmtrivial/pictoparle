@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class implement a gesture detector for double-tap,
+ * This class implement a gesture detector for double-tap, that ignore the other fingers
  *
  *
  */
