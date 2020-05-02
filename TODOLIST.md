@@ -9,8 +9,13 @@
 
 * Use preview frame rather than take a picture to compute the ambiant light
 
+## Board configuration
+
+* Add a supplementary fixed layout on each board
+
 ## Interactions
 
+* Refactor Gesture Detector independantly on each button. Does it work with multiple touch?.
 * Add a way to activate the sound of a pictogram using a long touch without moving the finger (~ 1 second ?)
 * Use QRcodes to detect the incoming board
 
