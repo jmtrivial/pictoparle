@@ -68,7 +68,6 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
         boardView = views.get(selected);
         if (activity.manualBoardOnScreen) {
             boardView.setManual(true);
-            activity.manualBoardOnScreen = false;
         }
         else {
             boardView.setManual(false);
@@ -93,6 +92,6 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
     public void onBoardDown() {
         // hide close button
         boardView.setManual(false);
-
+        activity.manualBoardOnScreen = false;
     }
 }
