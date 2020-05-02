@@ -15,8 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
 
-import androidx.annotation.RequiresApi;
-
 
 import java.util.ArrayList;
 
@@ -38,7 +36,6 @@ class BoardView extends LinearLayout {
         super(context);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public BoardView(Context context, Board board,
                      PictoParleActivity pictoParleActivity,
                      RobustGestureDetector.RobustGestureDetectorParams params) {
@@ -99,7 +96,6 @@ class BoardView extends LinearLayout {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void computeSpans() {
         Point size = new Point();
         activity.getWindowManager().getDefaultDisplay().getRealSize(size);
