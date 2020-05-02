@@ -4,7 +4,7 @@
         <row><pictogram txt="oui" image="oui" /></row>
         <row><pictogram txt="non" image="non" /></row>
         <row><pictogram txt="fini" image="fini" /></row>
-        <row><pictogram txt="je veux, j'ai besoin" image="jai_besoin" /></row>
+        <row><pictogram txt="j'ai besoin" image="jai_besoin" /></row>
         <row><pictogram txt="toilettes" image="toilettes" /></row>
     </cells>
     <cells>
