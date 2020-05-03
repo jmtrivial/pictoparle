@@ -247,6 +247,7 @@ public class PictoParleActivity
     protected void onResume() {
         super.onResume();
         fullScreen();
+        boardDetector.start();
         audioRenderer.speak("Pictoparle est prêt", "Prêt", "");
     }
 
