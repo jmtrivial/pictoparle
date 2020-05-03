@@ -5,7 +5,7 @@
     <color name="colorAccent">#ce9e3c</color>
     <color name="colorAccentText">#ffffff</color>
     <color name="black_overlay">#66000000</color>
-    <color name="main_background">#ccc8c0</color>
-    <color name="main_background_light">#d6d7d7</color>
+    <color name="main_background">#ffffff</color>
+    <color name="main_background_light">#ffffff</color>
     <color name="toolbar_color_control_normal">#ffffff</color>
 </resources>
