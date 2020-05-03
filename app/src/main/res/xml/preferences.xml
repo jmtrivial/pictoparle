@@ -36,7 +36,7 @@
             android:inputType="numberDecimal"
             android:title="Durée maximum d'un double tap (en milliseconde)"
             android:summary="Durée maximum entre le premier et le deuxième tap."
-            android:defaultValue="700"
+            android:defaultValue="400"
             />
 
     </PreferenceCategory>

@@ -282,7 +282,19 @@ public class PictoParleActivity
     @Override
     public void onNewHoverBoard(int boardID) {
         if (boardSet.containsBoard(boardID)) {
-            // TODO: change view to board fragment
+            if (boardID != boardSet.getSelectedBoard().id) {
+                // change view to board fragment
+                boardSet.setSelected(boardID);
+                // propagate update
+                if (currentFragment != null)
+                    currentFragment.onNewHoverBoard(boardID);
+                // inform user
+                String boardName = boardSet.getSelectedBoard().name;
+                audioRenderer.speak("Pictoparle a détecté la planche \"" + boardName,
+                        boardName + " détectée", boardSet.getSelectedBoard().name);
+            }
+            else
+                Log.d("PictoParle", "detect already selected board: " + boardID);
         }
         else {
             audioRenderer.speak("Pictoparle ne connait pas cette planche (numéro " + boardID + ")", "Planche inconnue.");
@@ -313,9 +325,9 @@ public class PictoParleActivity
 
     @Override
     protected  void onPause() {
-        super.onPause();
         boardDetector.setInactive();
         audioRenderer.speak("Pictoparle se met en pause", "Pause.","");
+        super.onPause();
     }
 
 

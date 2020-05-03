@@ -28,7 +28,7 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
 
     @Override
     public void onNewHoverBoard(int boardID) {
-        // ignore event
+        setTitle();
     }
 
     @Override
@@ -64,14 +64,17 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
         super.onResume();
         activity.setScreenVisible(true);
         activity.setCurrentFragment(this);
-        //activity.boardDetector.setActive();
+        setTitle();
+        activity.boardDetector.setActive();
+
+    }
+
+    public void setTitle() {
         Board board = activity.boardSet.getSelectedBoard();
         if (board != null) {
             // TODO: add a supplementary widget in the toolbar ?
             activity.getSupportActionBar().setTitle("PictoParle - planche " + board.name);
         }
-        activity.boardDetector.setActive();
-
     }
 
 
