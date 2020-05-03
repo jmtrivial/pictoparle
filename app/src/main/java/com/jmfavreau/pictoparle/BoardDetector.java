@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -12,6 +13,8 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class BoardDetector {
@@ -142,41 +145,47 @@ public class BoardDetector {
                             // inspired from https://stackoverflow.com/a/39948596
                             @Override
                             public void onPreviewFrame(byte[] data, Camera camera) {
-                                Log.d("PictoParle", "Process preview, width: " + width + ", height: " + height);
-                                long releaseTime = SystemClock.currentThreadTimeMillis();
-                                if (covered) releaseTime += interval_covered;
-                                else releaseTime += interval_uncovered;
+                                if (active) {
+                                    long releaseTime = SystemClock.currentThreadTimeMillis();
+                                    if (covered) releaseTime += interval_covered;
+                                    else releaseTime += interval_uncovered;
 
-                                long before = SystemClock.currentThreadTimeMillis();
-                                boolean cov = isCovered(data);
-                                long now = SystemClock.currentThreadTimeMillis();
-                                Log.d("PictoParle", "il s'est écoulé " + (now - before) + " ms");
-                                if (init) {
-                                    if (cov) {
-                                        sendMessageDown();
-                                    }
-                                    init = false;
-                                } else {
-                                    if (cov != covered) {
-                                        if (cov)
+                                    boolean cov;
+                                    int size = width * height;
+
+                                    // when resolution changed but we obtain a preview from the previous
+                                    // resolution, and it's not with the good resolution...
+                                    if (data.length <= size)
+                                        return;
+
+                                    cov = isCovered(data);
+
+                                    if (init) {
+                                        if (cov) {
                                             sendMessageDown();
-                                        else
-                                            sendMessageRemovedBoard();
-                                        Log.d("Pictoparle", "Detecting coverage change: " + covered);
+                                        }
+                                        init = false;
                                     } else {
-                                        if (!covered) {
-                                            Integer idcode = decode(data);
-                                            if (idcode != null) {
-                                                sendMessageNewHoverBoard(idcode);
+                                        if (cov != covered) {
+                                            if (cov)
+                                                sendMessageDown();
+                                            else
+                                                sendMessageRemovedBoard();
+                                        } else {
+                                            if (!covered) {
+                                                Integer idcode = decode(data);
+                                                if (idcode != null) {
+                                                    sendMessageNewHoverBoard(idcode);
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                try {
-                                    // see https://stackoverflow.com/a/5837955
-                                    Thread.sleep(releaseTime - SystemClock.currentThreadTimeMillis());
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
+                                    try {
+                                        // see https://stackoverflow.com/a/5837955
+                                        Thread.sleep(releaseTime - SystemClock.currentThreadTimeMillis());
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
 
@@ -214,7 +223,7 @@ public class BoardDetector {
                                     val += data[i] & 0xFF;
                                 }
                                 val /= size;
-                                return (val < 10);
+                                return (val < 50);
                             }
                         });
                     }
@@ -341,9 +350,38 @@ public class BoardDetector {
             param.setZoom(0);
         }
 
-        //set focus mode
-        if (param.getFocusMode() != null) {
-            param.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
+        if (covered) {
+            //set focus mode
+            if (param.getFocusMode() != null) {
+                param.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
+            }
+
+            // choose the smallest image
+            List<Camera.Size> prevResolutions = param.getSupportedPreviewSizes();
+            Collections.sort(prevResolutions, new Comparator<Camera.Size>() {
+                public int compare(final Camera.Size a, final Camera.Size b) {
+                    return a.width * a.height - b.width * b.height;
+                }
+            });
+
+            param.setPreviewSize(prevResolutions.get(0).width, prevResolutions.get(0).height);
+        }
+        else {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                param.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+            } else {
+                param.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            }
+
+            // choose the biggest image
+            List<Camera.Size> prevResolutions = param.getSupportedPreviewSizes();
+            Collections.sort(prevResolutions, new Comparator<Camera.Size>() {
+                public int compare(final Camera.Size a, final Camera.Size b) {
+                    return b.width * b.height - a.width * a.height;
+                }
+            });
+
+            param.setPreviewSize(prevResolutions.get(0).width, prevResolutions.get(0).height);
         }
 
         // set preview framerate
@@ -353,23 +391,21 @@ public class BoardDetector {
         int maxFps = (frameRates.get(l_first))[Camera.Parameters.PREVIEW_FPS_MAX_INDEX];
         param.setPreviewFpsRange(minFps, maxFps);
 
-        // TODO: change preview size
 
-        List<Integer> formats = param.getSupportedPictureFormats();
+        // set preview format
+        List<Integer> formats = param.getSupportedPreviewFormats();
         if (formats != null) {
             if (formats.contains(ImageFormat.NV16)) {
-                param.setPictureFormat(ImageFormat.NV16);
+                param.setPreviewFormat(ImageFormat.NV16);
             }
             else if (formats.contains(ImageFormat.NV21)) {
-                param.setPictureFormat(ImageFormat.NV21);
+                param.setPreviewFormat(ImageFormat.NV21);
             }
             else {
                 Log.w("PictoParle", "Cannot select a valid image format.");
             }
         }
 
-        width = param.getPreviewSize().width;
-        height = param.getPreviewSize().height;
 
         try {
             camera.setParameters(param);
@@ -378,7 +414,10 @@ public class BoardDetector {
             // might occur on Virtual environments, ignore it
             Log.w("PictoParle", "unable to set camera parameters");
         }
-
+        // then get the effective preview size
+        param = camera.getParameters();
+        width = param.getPreviewSize().width;
+        height = param.getPreviewSize().height;
 
         camera.startPreview();
     }
