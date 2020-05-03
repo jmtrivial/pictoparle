@@ -130,21 +130,27 @@ public class BoardDetector {
 
         // inspired from https://stackoverflow.com/a/19154438
         void openCamera() {
+            Log.d("PictoParle", "openCamera");
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     camera = getCameraInstance();
+                    final Bundle bundle = new Bundle();
 
                     if (camera != null) {
                         camera.setPreviewCallback(new Camera.PreviewCallback() {
                             // inspired from https://stackoverflow.com/a/39948596
                             @Override
                             public void onPreviewFrame(byte[] data, Camera camera) {
+                                Log.d("PictoParle", "Process preview, width: " + width + ", height: " + height);
                                 long releaseTime = SystemClock.currentThreadTimeMillis();
                                 if (covered) releaseTime += interval_covered;
                                 else releaseTime += interval_uncovered;
 
+                                long before = SystemClock.currentThreadTimeMillis();
                                 boolean cov = isCovered(data);
+                                long now = SystemClock.currentThreadTimeMillis();
+                                Log.d("PictoParle", "il s'est écoulé " + (now - before) + " ms");
                                 if (init) {
                                     if (cov) {
                                         sendMessageDown();
@@ -176,7 +182,6 @@ public class BoardDetector {
 
                             private void sendMessageNewHoverBoard(Integer idCode) {
                                 Message msg = mHandler.obtainMessage();
-                                Bundle bundle = new Bundle();
                                 bundle.putString(MSG_KEY, ON_REMOVE_BOARD);
                                 bundle.putInt(ID_CODE, idCode);
                                 msg.setData(bundle);
@@ -185,7 +190,6 @@ public class BoardDetector {
 
                             private void sendMessageRemovedBoard() {
                                 Message msg = mHandler.obtainMessage();
-                                Bundle bundle = new Bundle();
                                 bundle.putString(MSG_KEY, ON_REMOVE_BOARD);
                                 msg.setData(bundle);
                                 mHandler.sendMessage(msg);
@@ -193,7 +197,6 @@ public class BoardDetector {
 
                             private void sendMessageDown() {
                                 Message msg = mHandler.obtainMessage();
-                                Bundle bundle = new Bundle();
                                 bundle.putString(MSG_KEY, ON_BOARD_DOWN);
                                 msg.setData(bundle);
                                 mHandler.sendMessage(msg);
@@ -264,6 +267,8 @@ public class BoardDetector {
         this.interval_covered = interval_covered;
         this.interval_uncovered = interval_uncovered;
 
+        surfaceTexture = null;
+
         // by default, the board is covered
         covered = true;
 
@@ -299,13 +304,15 @@ public class BoardDetector {
 
     private void setParamsStartPreview() {
         // create a surface to get resulting images
-        try {
-            surfaceTexture = new SurfaceTexture(10);
-            camera.setPreviewTexture(surfaceTexture);
-        } catch (Exception e) {
-            Log.e("PictoParle", "Cannot create a surface texture");
-            setErrorInActivation();
-            return;
+        if (surfaceTexture == null) {
+            try {
+                surfaceTexture = new SurfaceTexture(10);
+                camera.setPreviewTexture(surfaceTexture);
+            } catch (Exception e) {
+                Log.e("PictoParle", "Cannot create a surface texture");
+                setErrorInActivation();
+                return;
+            }
         }
 
         // set parameters
@@ -361,20 +368,22 @@ public class BoardDetector {
             }
         }
 
+        width = param.getPreviewSize().width;
+        height = param.getPreviewSize().height;
+
         try {
             camera.setParameters(param);
         }
         catch (RuntimeException e) {
             // might occur on Virtual environments, ignore it
+            Log.w("PictoParle", "unable to set camera parameters");
         }
-        width = param.getPreviewSize().width;
-        height = param.getPreviewSize().height;
+
 
         camera.startPreview();
     }
 
     public void clear() {
-        Log.d("PictoParle", "clear board detector");
         if (camera != null) {
             camera.stopPreview();
             camera.release();

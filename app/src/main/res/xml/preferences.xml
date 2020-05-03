@@ -53,7 +53,7 @@
             android:inputType="numberDecimal"
             android:title="Intervalle de détection de recouvrement (en milliseconde)"
             android:summary="Intervalle entre deux vérifications du recouvrement de la tablette par une planche."
-            android:defaultValue="4000"
+            android:defaultValue="400"
             />
 
         <EditTextPreference
@@ -61,7 +61,7 @@
             android:inputType="numberDecimal"
             android:title="Intervalle de détection de découvrement (en milliseconde)"
             android:summary="Intervalle entre deux vérifications du découvrement de la tablette par une planche."
-            android:defaultValue="1000"
+            android:defaultValue="400"
             />
     </PreferenceCategory>
 
