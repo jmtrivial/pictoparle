@@ -70,6 +70,7 @@ public class PictoParleActivity
     protected RobustGestureDetector.RobustGestureDetectorParams params;
     protected AudioRenderer audioRenderer;
     private int audio_verbosity;
+    private boolean waitForNew;
 
     // a function to show explanation when asking permission
     private void showExplanation(String title,
@@ -247,6 +248,7 @@ public class PictoParleActivity
     protected void onResume() {
         super.onResume();
         fullScreen();
+        waitForNew = true;
         boardDetector.start();
         audioRenderer.speak("Pictoparle est prêt", "Prêt", "");
     }
@@ -276,13 +278,14 @@ public class PictoParleActivity
             currentFragment.onRemovedBoard();
         else
             Log.d("PictoParle", "unable to detect the active fragment");
-
+        waitForNew = true;
     }
 
     @Override
     public void onNewHoverBoard(int boardID) {
         if (boardSet.containsBoard(boardID)) {
-            if (boardID != boardSet.getSelectedBoard().id) {
+            if (boardID != boardSet.getSelectedBoard().id || waitForNew) {
+                waitForNew = false;
                 // change view to board fragment
                 boardSet.setSelected(boardID);
                 // propagate update
