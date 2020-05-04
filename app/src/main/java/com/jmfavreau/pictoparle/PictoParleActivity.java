@@ -294,7 +294,7 @@ public class PictoParleActivity
                 // inform user
                 String boardName = boardSet.getSelectedBoard().name;
                 audioRenderer.speak("Pictoparle a détecté la planche \"" + boardName,
-                        boardName + " détectée", boardSet.getSelectedBoard().name);
+                        "Planche " + boardName + " détectée", boardSet.getSelectedBoard().name);
             }
             else
                 Log.d("PictoParle", "detect already selected board: " + boardID);
