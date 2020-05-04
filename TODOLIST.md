@@ -5,15 +5,10 @@
 * Consider text-to-speech as an alternative to audio recorded sounds
 * Add small sounds for a quiet mode (board active / inactive)
 
-## Energy saving
-
-* Use preview frame rather than take a picture to compute the ambiant light
-
 
 ## Interactions
 
 * Add a way to activate the sound of a pictogram using a long touch without moving the finger (~ 1 second ?)
-* Use QRcodes to detect the incoming board
 
 ## Preferences
 
