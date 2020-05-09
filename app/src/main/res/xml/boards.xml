@@ -2,9 +2,6 @@
 <boards lang="fr">
     <board name="principale" />
     <board name="activites" />
-    <board name="lieux" />
-    <board name="proches" />
-    <board name="famille" />
     <board name="objets" />
     <board name="animaux" />
     <board name="raconter" />
