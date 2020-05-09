@@ -3,22 +3,26 @@
     app:startDestination="@+id/home_fragment">
     <fragment android:id="@+id/home_fragment"
         android:label="PictoParle"
-        android:name="com.jmfavreau.pictoparle.HomeFragment">
+        android:name="com.jmfavreau.pictoparle.ui.HomeFragment">
         <action android:id="@+id/select_in_list"
             app:destination="@id/board_list_fragment" />
         <action android:id="@+id/view_board_from_home"
             app:destination="@id/picto_board" />
         <action android:id="@+id/view_preferences"
             app:destination="@id/preferences" />
+        <action android:id="@+id/view_manage_boards"
+            app:destination="@id/manage_boards" />
     </fragment>
     <fragment android:id="@+id/board_list_fragment"
         android:label="Choix d'une planche"
-        android:name="com.jmfavreau.pictoparle.BoardListFragment">
+        android:name="com.jmfavreau.pictoparle.ui.BoardListFragment">
             <action android:id="@+id/view_board_from_board_list"
                 app:destination="@id/picto_board" />
     </fragment>
+    <fragment android:id="@+id/manage_boards"
+        android:name="com.jmfavreau.pictoparle.ui.BoardManagerFragment"/>
     <fragment android:id="@+id/picto_board"
-        android:name="com.jmfavreau.pictoparle.BoardFragment"/>
+        android:name="com.jmfavreau.pictoparle.ui.BoardFragment"/>
     <fragment android:id="@+id/preferences"
-        android:name="com.jmfavreau.pictoparle.SettingFragment" />
+        android:name="com.jmfavreau.pictoparle.ui.SettingFragment" />
 </navigation>

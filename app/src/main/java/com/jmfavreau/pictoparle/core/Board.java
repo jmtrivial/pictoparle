@@ -1,13 +1,16 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.core;
 
+import android.app.Activity;
 import android.content.res.XmlResourceParser;
+
+import com.jmfavreau.pictoparle.PictoParleActivity;
 
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-class Board {
+public class Board {
 
 
     public String name;
@@ -18,10 +21,15 @@ class Board {
 
     public ArrayList<BoardPanel> panels;
 
+    public boolean coreBoard;
 
+    private boolean active;
+    private PictoParleActivity activity;
 
-    public Board(XmlResourceParser parser, float xdpmm, float ydpmm) throws IOException, XmlPullParserException {
+    public Board(PictoParleActivity activity, XmlResourceParser parser, float xdpmm, float ydpmm, boolean coreBoard) throws IOException, XmlPullParserException {
         panels = new ArrayList<>();
+        this.activity = activity;
+        this.coreBoard = coreBoard;
         do {
                 if (parser.getEventType() == XmlResourceParser.START_TAG) {
                     switch (parser.getName()) {
@@ -38,6 +46,7 @@ class Board {
                 }
         } while (parser.next() != XmlResourceParser.END_DOCUMENT);
 
+        active = activity.getPreferenceIsActiveBoard(id);
     }
 
 
@@ -56,4 +65,12 @@ class Board {
             panels.get(i).updateSizes(xdpmm, ydpmm);
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean a) {
+        active = a;
+        activity.setPreferenceIsActiveBoard(id, a);
+    }
 }

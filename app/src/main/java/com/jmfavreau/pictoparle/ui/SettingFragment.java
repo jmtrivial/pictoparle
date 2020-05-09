@@ -1,4 +1,4 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.jmfavreau.pictoparle.PictoParleActivity;
+import com.jmfavreau.pictoparle.R;
 
 public class SettingFragment extends PreferenceFragmentCompat {
     private PictoParleActivity activity;

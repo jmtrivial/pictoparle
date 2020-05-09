@@ -1,8 +1,13 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.core;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.util.Log;
+
+import com.jmfavreau.pictoparle.PictoParleActivity;
+import com.jmfavreau.pictoparle.R;
+import com.jmfavreau.pictoparle.core.Board;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -11,6 +16,7 @@ import java.util.ArrayList;
 
 public class BoardSet {
 
+    private final PictoParleActivity activity;
     /**
      * true DPI cannot be get from the Android API. Thus it is a parameter of the application
      */
@@ -22,14 +28,20 @@ public class BoardSet {
     protected ArrayList<Board> boards;
     private int selected;
 
+    private boolean hasSelected;
+
     private String lang;
 
-    public BoardSet(Resources resources, String packagename, float xdpmm, float ydpmm) {
+    public BoardSet(PictoParleActivity activity, Resources resources, String packagename, float xdpmm, float ydpmm) {
         this.xdpmm = xdpmm;
         this.ydpmm = ydpmm;
+        this.activity = activity;
 
         // select default language
         lang = "fr";
+
+        // by default, no board is selected
+        hasSelected = false;
 
         // load boards
         try {
@@ -40,8 +52,19 @@ public class BoardSet {
             Log.e("PictoParle", "XML Error while reading a board.");
         }
 
+
+    }
+
+    public boolean setSelectedDefault() {
         /* the selected board is the first of the list */
-        selected = boards.get(0).id;
+        for(int i = 0; i != boards.size(); ++i)
+            if (boards.get(i).isActive()) {
+                selected = boards.get(i).id;
+                hasSelected = true;
+                return true;
+            }
+        hasSelected = false;
+        return false;
     }
 
     private void loadXMLResources(Resources resources, String packagename) throws IOException, XmlPullParserException {
@@ -62,7 +85,7 @@ public class BoardSet {
                             xrp.getAttributeValue(null, "name"),
                             "xml", packagename);
                     XmlResourceParser parser = resources.getXml(identifier);
-                    Board b = new Board(parser, xdpmm, ydpmm);
+                    Board b = new Board(activity, parser, xdpmm, ydpmm, true);
                     if (b.isValid()) {
                         boards.add(b);
                     } else {
@@ -73,11 +96,15 @@ public class BoardSet {
         } while (xrp.next() != XmlResourceParser.END_DOCUMENT);
 
         // the selected one is the first one
-        selected = boards.get(0).id;
+        setSelectedDefault();
     }
 
     public String getLang() {
         return lang;
+    }
+
+    public boolean getHasSelected() {
+        return hasSelected;
     }
 
     public int getSelected() {
@@ -86,9 +113,12 @@ public class BoardSet {
 
     public void setSelected(int i) {
         selected = i;
+        hasSelected = true;
     }
 
     public Board getSelectedBoard() {
+        if (!hasSelected)
+            return null;
         try {
             return getBoardByID(getSelected());
         }

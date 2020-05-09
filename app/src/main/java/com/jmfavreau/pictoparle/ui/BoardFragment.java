@@ -1,7 +1,6 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.ui;
 
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import com.jmfavreau.pictoparle.BoardDetector;
+import com.jmfavreau.pictoparle.PictoParleActivity;
+import com.jmfavreau.pictoparle.ui.BoardView;
 
 import java.util.TreeMap;
 
@@ -63,17 +66,18 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
 
 
     private void setActiveBoard() {
-        int selected = activity.boardSet.getSelected();
-        view.removeAllViews();
-        boardView = views.get(selected);
-        if (activity.manualBoardOnScreen) {
-            boardView.setManual(true);
+        if (activity.boardSet.getHasSelected()) {
+            int selected = activity.boardSet.getSelected();
+            view.removeAllViews();
+            boardView = views.get(selected);
+            if (activity.manualBoardOnScreen) {
+                boardView.setManual(true);
+            } else {
+                boardView.setManual(false);
+            }
+            view.addView(boardView);
+            activity.setCurrentFragment(this);
         }
-        else {
-            boardView.setManual(false);
-        }
-        view.addView(boardView);
-        activity.setCurrentFragment(this);
     }
 
 

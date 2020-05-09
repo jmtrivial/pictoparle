@@ -1,6 +1,5 @@
 package com.jmfavreau.pictoparle;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,7 +11,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.preference.ListPreference;
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
@@ -23,7 +21,6 @@ import android.graphics.Point;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,8 +28,8 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
-
-import java.util.Locale;
+import com.jmfavreau.pictoparle.core.Board;
+import com.jmfavreau.pictoparle.core.BoardSet;
 
 
 /*
@@ -50,25 +47,25 @@ public class PictoParleActivity
         extends AppCompatActivity
         implements BoardDetector.SimpleBoardListener, NavigationView.OnNavigationItemSelectedListener {
 
-    protected BoardSet boardSet;
+    public BoardSet boardSet;
 
     String lang;
 
 
-    protected BoardDetector boardDetector;
+    public BoardDetector boardDetector;
     private BoardDetector.SimpleBoardListener currentFragment;
     private NavController navController;
     private DrawerLayout drawerLayout;
     private AppBarConfiguration appBarConfiguration;
-    protected boolean manualBoardOnScreen;
+    public boolean manualBoardOnScreen;
     private boolean active_dark_screen;
     private boolean active_board_detection;
     private float screenWidthMM;
     private float screenHeightMM;
     private long interval_covered;
     private long interval_uncovered;
-    protected RobustGestureDetector.RobustGestureDetectorParams params;
-    protected AudioRenderer audioRenderer;
+    public RobustGestureDetector.RobustGestureDetectorParams params;
+    public AudioRenderer audioRenderer;
     private int audio_verbosity;
     private boolean waitForNew;
 
@@ -196,6 +193,21 @@ public class PictoParleActivity
         audio_verbosity = Integer.parseInt(preferences.getString("audio_verbosity", "1"));
     }
 
+    public boolean getPreferenceIsActiveBoard(int id) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return preferences.getBoolean("isactive " + id, true);
+    }
+    public void setPreferenceIsActiveBoard(int id, boolean value) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("isactive " + id, value);
+        editor.commit();
+        if ((id == boardSet.getSelected() && !value) || (value && !boardSet.getHasSelected())) {
+            boardSet.setSelectedDefault();
+            setTitle();
+        }
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -209,14 +221,19 @@ public class PictoParleActivity
         else if (id == R.id.application_exit) {
             finish();
         }
+        else if (id == R.id.manage_boards) {
+            navController.navigate(R.id.view_manage_boards);
+        }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
     private void forceManualBoardDown() {
-        manualBoardOnScreen = true;
-        onBoardDown();
+        if (boardSet.getHasSelected()) {
+            manualBoardOnScreen = true;
+            onBoardDown();
+        }
     }
 
     @Override
@@ -307,7 +324,7 @@ public class PictoParleActivity
 
     @Override
     public void onBoardDown() {
-        if (boardSet.getSelected() == -1) {
+        if (!boardSet.getHasSelected()) {
             audioRenderer.speak("Pictoparle n'a pas eu le temps de reconnaître la planche.", "Pas de planche.");
         }
         else {
@@ -399,6 +416,16 @@ public class PictoParleActivity
         // create boardSet from resources
         float xdpmm = (float) size.x / screenWidthMM;
         float ydpmm = (float) size.y / screenHeightMM;
-        boardSet = new BoardSet(getResources(), getPackageName(), xdpmm, ydpmm);
+        boardSet = new BoardSet(this, getResources(), getPackageName(), xdpmm, ydpmm);
+    }
+
+    public void setTitle() {
+        Board board = boardSet.getSelectedBoard();
+        if (board != null) {
+            getSupportActionBar().setTitle("PictoParle - planche " + board.name);
+        }
+        else {
+            getSupportActionBar().setTitle("PictoParle - pas de planche");
+        }
     }
 }

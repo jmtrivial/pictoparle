@@ -1,20 +1,21 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.ui;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import com.jmfavreau.pictoparle.BoardDetector;
+import com.jmfavreau.pictoparle.PictoParleActivity;
+import com.jmfavreau.pictoparle.R;
+import com.jmfavreau.pictoparle.core.Board;
 
 public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardListener {
 
@@ -28,7 +29,7 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
 
     @Override
     public void onNewHoverBoard(int boardID) {
-        setTitle();
+        activity.setTitle();
     }
 
     @Override
@@ -64,18 +65,11 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
         super.onResume();
         activity.setScreenVisible(true);
         activity.setCurrentFragment(this);
-        setTitle();
+        activity.setTitle();
         activity.boardDetector.setActive();
 
     }
 
-    public void setTitle() {
-        Board board = activity.boardSet.getSelectedBoard();
-        if (board != null) {
-            // TODO: add a supplementary widget in the toolbar ?
-            activity.getSupportActionBar().setTitle("PictoParle - planche " + board.name);
-        }
-    }
 
 
 }

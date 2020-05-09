@@ -1,9 +1,9 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.core;
 
-class Pictogram {
-    String txt;
-    String audioFileName;
-    String imageFileName;
+public class Pictogram {
+    public String txt;
+    public String audioFileName;
+    public String imageFileName;
 
     public Pictogram(String txt, String audioFileName, String imageFileName) {
         this.txt = txt;

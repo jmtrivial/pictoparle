@@ -1,6 +1,8 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.core;
 
 import android.content.res.XmlResourceParser;
+
+import com.jmfavreau.pictoparle.core.Pictogram;
 
 import org.xmlpull.v1.XmlPullParserException;
 

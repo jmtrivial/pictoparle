@@ -1,12 +1,15 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.ui;
 
 import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.speech.tts.TextToSpeech;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.jmfavreau.pictoparle.AudioRenderer;
+import com.jmfavreau.pictoparle.RobustGestureDetector;
+import com.jmfavreau.pictoparle.core.Pictogram;
 
 import org.jetbrains.annotations.NotNull;
 

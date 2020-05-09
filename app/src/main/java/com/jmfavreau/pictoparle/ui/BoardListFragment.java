@@ -1,13 +1,13 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -15,6 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import com.jmfavreau.pictoparle.BoardDetector;
+import com.jmfavreau.pictoparle.PictoParleActivity;
+import com.jmfavreau.pictoparle.R;
+import com.jmfavreau.pictoparle.core.Board;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -25,6 +30,7 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
     private BoardsAdapter boardsAdapter;
     private PictoParleActivity activity;
     private View view;
+    private ArrayList<Board> activeBoards;
 
     @Override
     public void onRemovedBoard() {
@@ -43,7 +49,7 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
 
 
 
-    public static class BoardsAdapter extends ArrayAdapter<Board> {
+    public static class BoardsAdapter extends ArrayAdapter<Board> implements Filterable {
 
         BoardsAdapter(Context context, ArrayList<Board> boards) {
             super(context, 0, boards);
@@ -77,8 +83,9 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
 
         view = LayoutInflater.from(getContext()).inflate(R.layout.board_selection_list, container, false);
 
+        activeBoards = new ArrayList<Board>();
 
-        boardsAdapter = new BoardsAdapter(getContext(), activity.boardSet.getBoards());
+        boardsAdapter = new BoardsAdapter(getContext(), activeBoards);
         ListView lv = view.findViewById(R.id.board_listview);
         lv.setAdapter(boardsAdapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -95,6 +102,16 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
         return view;
     }
 
+    private void rebuildBoardList() {
+        activeBoards.clear();
+        for(int i = 0; i != activity.boardSet.getBoards().size(); ++i) {
+            Board cur = activity.boardSet.getBoards().get(i);
+            if (cur.isActive())
+                activeBoards.add(cur);
+        }
+        boardsAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onResume() {
         activity.audioRenderer.speak("Choix d'une planche", "");
@@ -102,6 +119,7 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
         activity.boardDetector.setActive();
         activity.setScreenVisible(true);
         activity.setCurrentFragment(this);
+        rebuildBoardList();
     }
 
 
