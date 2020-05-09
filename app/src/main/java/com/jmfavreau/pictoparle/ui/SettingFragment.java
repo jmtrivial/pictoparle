@@ -124,7 +124,13 @@ public class SettingFragment extends PreferenceFragmentCompat {
         super.onResume();
         activity.boardDetector.setInactive();
         activity.setScreenVisible(true);
+        setTitle();
     }
+
+    public void setTitle() {
+        activity.getSupportActionBar().setTitle("Préférences");
+    }
+
 
     @Override
     public void onPause() {

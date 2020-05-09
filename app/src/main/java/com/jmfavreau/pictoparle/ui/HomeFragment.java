@@ -29,7 +29,7 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
 
     @Override
     public void onNewHoverBoard(int boardID) {
-        activity.setTitle();
+        setTitle();
     }
 
     @Override
@@ -65,10 +65,21 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
         super.onResume();
         activity.setScreenVisible(true);
         activity.setCurrentFragment(this);
-        activity.setTitle();
+        setTitle();
         activity.boardDetector.setActive();
 
     }
+
+    public void setTitle() {
+        Board board = activity.boardSet.getSelectedBoard();
+        if (board != null) {
+            activity.getSupportActionBar().setTitle("PictoParle - planche " + board.name);
+        }
+        else {
+            activity.getSupportActionBar().setTitle("PictoParle - pas de planche");
+        }
+    }
+
 
 
 

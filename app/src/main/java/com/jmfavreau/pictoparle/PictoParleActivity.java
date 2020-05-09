@@ -204,7 +204,6 @@ public class PictoParleActivity
         editor.commit();
         if ((id == boardSet.getSelected() && !value) || (value && !boardSet.getHasSelected())) {
             boardSet.setSelectedDefault();
-            setTitle();
         }
     }
 
@@ -419,13 +418,4 @@ public class PictoParleActivity
         boardSet = new BoardSet(this, getResources(), getPackageName(), xdpmm, ydpmm);
     }
 
-    public void setTitle() {
-        Board board = boardSet.getSelectedBoard();
-        if (board != null) {
-            getSupportActionBar().setTitle("PictoParle - planche " + board.name);
-        }
-        else {
-            getSupportActionBar().setTitle("PictoParle - pas de planche");
-        }
-    }
 }

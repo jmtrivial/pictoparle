@@ -48,7 +48,6 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
     }
 
 
-
     public static class BoardsAdapter extends ArrayAdapter<Board> implements Filterable {
 
         BoardsAdapter(Context context, ArrayList<Board> boards) {
@@ -104,7 +103,7 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
 
     private void rebuildBoardList() {
         activeBoards.clear();
-        for(int i = 0; i != activity.boardSet.getBoards().size(); ++i) {
+        for (int i = 0; i != activity.boardSet.getBoards().size(); ++i) {
             Board cur = activity.boardSet.getBoards().get(i);
             if (cur.isActive())
                 activeBoards.add(cur);
@@ -120,8 +119,12 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
         activity.setScreenVisible(true);
         activity.setCurrentFragment(this);
         rebuildBoardList();
+        setTitle();
     }
 
+    public void setTitle() {
+        activity.getSupportActionBar().setTitle("Liste des planches");
+    }
 
 
 }

@@ -102,8 +102,12 @@ public static class BoardsAdapter extends ArrayAdapter<Board> {
         super.onResume();
         activity.boardDetector.setInactive();
         activity.setScreenVisible(true);
+        setTitle();
     }
 
+    public void setTitle() {
+        activity.getSupportActionBar().setTitle("Gestion des planches");
+    }
 
 
 }
