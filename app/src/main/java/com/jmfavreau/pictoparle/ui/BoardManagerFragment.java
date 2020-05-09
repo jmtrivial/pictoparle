@@ -2,6 +2,7 @@ package com.jmfavreau.pictoparle.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +55,7 @@ public static class BoardsAdapter extends ArrayAdapter<Board> {
         TextView bdName = convertView.findViewById(R.id.bdName);
         // Populate the data into the template view using the data object
         assert board != null;
-        bdName.setText(board.name);
+        bdName.setText(Html.fromHtml("<b>" + board.name + "</b> (id " + board.id + ")"));
 
         Button button = convertView.findViewById(R.id.remove_button);
         Switch sw = convertView.findViewById(R.id.active);
