@@ -317,7 +317,7 @@ public class BoardDetector  {
 
                     camera = getCameraInstance();
 
-                    
+
                     notifyCameraOpened();
                 }
 
