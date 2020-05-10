@@ -317,7 +317,7 @@ public class BoardDetector  {
 
                     camera = getCameraInstance();
 
-
+                    
                     notifyCameraOpened();
                 }
 
@@ -339,20 +339,12 @@ public class BoardDetector  {
             notify();
         }
 
-        void openCamera() {
+        @Override
+        protected void onLooperPrepared() {
             workerHandler = new Handler();
 
             workerHandler.post(runnableOpenCam);
-            try {
-                wait();
-                workerHandler.post(runnerActive);
-
-            }
-            catch (InterruptedException e) {
-                Log.w("PictoParle", "wait was interrupted in camera thread");
-                errorOnCreation = true;
-                camera = null;
-            }
+            workerHandler.post(runnerActive);
         }
 
         void setActive() {
@@ -376,9 +368,6 @@ public class BoardDetector  {
         workerThread = new CameraWorkerThread();
         workerThread.start();
 
-        synchronized (workerThread) {
-            workerThread.openCamera();
-        }
     }
 
 
