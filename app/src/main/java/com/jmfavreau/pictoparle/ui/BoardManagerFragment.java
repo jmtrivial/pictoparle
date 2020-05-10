@@ -139,6 +139,7 @@ public class BoardManagerFragment extends Fragment {
     }
 
     public void addBoard() {
+        activity.audioRenderer.setSilence(true);
         if (activity.hasReadFilePermissions()) {
             activity.boardFileSelector();
         }
@@ -190,6 +191,7 @@ public class BoardManagerFragment extends Fragment {
         }
 
         boardFileLoadingLocation = null;
+        activity.audioRenderer.setSilence(false);
     }
 
     private void dirChecker(String dir) {

@@ -9,6 +9,7 @@ public class AudioRenderer {
     private TextToSpeech tts;
     private String lang;
     private int audio_verbosity;
+    private boolean silence;
 
     public AudioRenderer(Context context, String l) {
         this.lang = l;
@@ -25,6 +26,7 @@ public class AudioRenderer {
                 }
             }
         });
+        silence = false;
 
     }
 
@@ -32,6 +34,9 @@ public class AudioRenderer {
         audio_verbosity = av;
     }
 
+    public void setSilence(boolean silence) {
+        this.silence = true;
+    }
 
     public void speak(String msg) {
         speak(msg, msg, msg);
@@ -41,17 +46,19 @@ public class AudioRenderer {
     }
 
     public void speak(String verboseMsg, String msg, String briefMsg) {
-        switch (audio_verbosity) {
-            case 1:
-                speakInternal(verboseMsg);
-                break;
-            case 2:
-                speakInternal(msg);
-                break;
-            case 3:
-            default:
-                speakInternal(briefMsg);
-                break;
+        if (!silence) {
+            switch (audio_verbosity) {
+                case 1:
+                    speakInternal(verboseMsg);
+                    break;
+                case 2:
+                    speakInternal(msg);
+                    break;
+                case 3:
+                default:
+                    speakInternal(briefMsg);
+                    break;
+            }
         }
     }
 

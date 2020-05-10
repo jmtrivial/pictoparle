@@ -484,6 +484,7 @@ public class PictoParleActivity
                 boardManager.clearRecentImport();
             }
         }
+        audioRenderer.setSilence(false);
 
     }
 }
