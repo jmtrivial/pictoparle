@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board id="2" name="lieux" orientation="horizontal">
+    <cells cellWidth="31.25" cellHeight="25">
+        <row><pictogram txt="oui" image="oui.png" /></row>
+        <row><pictogram txt="non" image="non.png" /></row>
+        <row><pictogram txt="fini" image="fini.png" /></row>
+        <row><pictogram txt="
+        j'ai besoin" image="jai_besoin.png" /></row>
+        <row><pictogram txt="toilettes" image="toilettes.png" /></row>
+    </cells>
+    <cells>
+        <quit width="10" height="10" />
+    </cells>
+    <cells cellWidth="50" cellHeight="40">
+        <row>
+            <pictogram txt="chambre" image="chambre.png" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="CRDV" image="crdv.png" />
+            <pictogram txt="chez Maman" image="chez_maman.png" />
+            <pictogram txt="chez Papa" image="chez_papa.png" />
+        </row>
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="piscine, balnéothérapie" image="piscine.png" />
+        </row>
+    </cells>
+</board>

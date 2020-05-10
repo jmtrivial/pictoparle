@@ -82,7 +82,9 @@ public class BoardDetector  {
     private CameraWorkerThread workerThread = null;
     private Handler uiHandler = new Handler();
 
-
+    public boolean isWaiting() {
+        return workerThread != null;
+    }
 
 
     /** this class creates the camera in a separated thread, such that it will not
@@ -103,7 +105,8 @@ public class BoardDetector  {
             runnerInactive = new Runnable() {
                 @Override
                 public void run() {
-                    camera.stopPreview();
+                    if (camera != null)
+                        camera.stopPreview();
                 }
             };
 
@@ -471,6 +474,7 @@ public class BoardDetector  {
     public void clear() {
         if (camera != null) {
             workerThread.stopCamera();
+            workerThread = null;
         }
     }
 

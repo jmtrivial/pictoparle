@@ -1,9 +1,8 @@
 package com.jmfavreau.pictoparle.core;
 
-import android.content.res.XmlResourceParser;
+import android.content.Context;
 
-import com.jmfavreau.pictoparle.core.Pictogram;
-
+import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -29,11 +28,38 @@ public class BoardPanel {
 
     private float xdpmm;
     private float ydpmm;
+    private String directory;
+    private boolean hasFiles;
 
     private ArrayList<ArrayList<Pictogram>> cells;
 
 
-    public BoardPanel(XmlResourceParser parser, float xdpmm, float ydpmm) throws IOException, XmlPullParserException {
+
+    public BoardPanel(XmlPullParser parser, float xdpmm, float ydpmm,
+                      Context context,
+                      String directory) throws IOException, XmlPullParserException {
+        this.directory = directory;
+        loadFromParser(parser, xdpmm, ydpmm);
+        if (directory == null)
+            hasFiles = true;
+        else
+            checkHasFilesInDirectory(context);
+    }
+
+
+    private void checkHasFilesInDirectory(Context context) {
+        hasFiles = true;
+        for(int i = 0; i != this.cells.size(); ++i) {
+            for(int j = 0; j != this.cells.get(i).size(); ++j) {
+                if (!this.cells.get(i).get(j).checkHasFilesInDirectory(context)) {
+                    hasFiles = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    private void loadFromParser(XmlPullParser parser, float xdpmm, float ydpmm) throws IOException, XmlPullParserException {
         this.cells = new ArrayList<>();
 
         // by default, there is no qui button
@@ -47,7 +73,7 @@ public class BoardPanel {
 
 
         do {
-            if (parser.getEventType() == XmlResourceParser.START_TAG) {
+            if (parser.getEventType() == XmlPullParser.START_TAG) {
                 switch (parser.getName()) {
                     case "cells":
                         String v = parser.getAttributeValue(null, "cellWidth");
@@ -62,7 +88,7 @@ public class BoardPanel {
                         String txt = parser.getAttributeValue(null, "txt");
                         String audio = parser.getAttributeValue(null, "audio");
                         String image = parser.getAttributeValue(null, "image");
-                        this.cells.get(this.cells.size() - 1).add(new Pictogram(txt, audio, image));
+                        this.cells.get(this.cells.size() - 1).add(new Pictogram(txt, audio, image, directory));
                         break;
                     case "quit":
                         this.rowPositionQuitButton = this.cells.size();
@@ -78,12 +104,12 @@ public class BoardPanel {
 
                 }
             }
-            else if (parser.getEventType() == XmlResourceParser.END_TAG) {
+            else if (parser.getEventType() == XmlPullParser.END_TAG) {
                 // end of cell description
                 if (parser.getName().equals("cells"))
                     break;
             }
-        } while(parser.next() != XmlResourceParser.END_DOCUMENT);
+        } while(parser.next() != XmlPullParser.END_DOCUMENT);
 
         nbRows = this.cells.size();
         nbColumns = 0;
@@ -105,7 +131,7 @@ public class BoardPanel {
     }
 
     public boolean isValid() {
-        return (this.cells != null) &&
+        return hasFiles && (this.cells != null) &&
                 (((this.nbColumns > 0) && (this.nbRows > 0) &&
                 (this.cellWidthPX > 0) && (this.cellHeightPX > 0)) ||
                         (this.hasQuitButton() &&

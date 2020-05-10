@@ -14,11 +14,14 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +33,10 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.jmfavreau.pictoparle.core.Board;
 import com.jmfavreau.pictoparle.core.BoardSet;
+import com.jmfavreau.pictoparle.ui.BoardManagerFragment;
+
+import java.io.IOException;
+import java.net.URI;
 
 
 /*
@@ -68,6 +75,8 @@ public class PictoParleActivity
     public AudioRenderer audioRenderer;
     private int audio_verbosity;
     private boolean waitForNew;
+    private boolean readExternal;
+    public BoardManagerFragment boardManager;
 
     // a function to show explanation when asking permission
     private void showExplanation(String title,
@@ -92,6 +101,7 @@ public class PictoParleActivity
     }
 
     private final int REQUEST_PERMISSION_CAMERA = 1;
+    private final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 2;
 
     // show a small message depending on the permission result
     @Override
@@ -107,6 +117,19 @@ public class PictoParleActivity
                 } else {
                     Toast.makeText(this, "Permission refusée.", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case REQUEST_PERMISSION_READ_EXTERNAL_STORAGE:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    readExternal = true;
+                    if (boardManager != null)
+                        boardManager.addBoard();
+                } else {
+                    Toast.makeText(this, "Permission refusée.", Toast.LENGTH_SHORT).show();
+                    readExternal = false;
+                }
+                fullScreen();
+                break;
         }
     }
 
@@ -265,7 +288,8 @@ public class PictoParleActivity
         super.onResume();
         fullScreen();
         waitForNew = true;
-        boardDetector.start();
+        if (!boardDetector.isWaiting())
+            boardDetector.start();
         audioRenderer.speak("Pictoparle est prêt", "Prêt", "");
     }
 
@@ -399,6 +423,27 @@ public class PictoParleActivity
         audioRenderer.setAudioVerbosity(av);
     }
 
+    public boolean hasReadFilePermissions() {
+
+        // first of all, check permissions for camera
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            readExternal = false;
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_PHONE_STATE)) {
+                showExplanation("Permission requise", "Rationale",
+                        Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+            } else {
+                requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+            }
+            return false;
+        }
+        else {
+            readExternal = true;
+            return true;
+        }
+
+    }
 
     private void updateScreenSize() {
         Point size = new Point();
@@ -418,4 +463,27 @@ public class PictoParleActivity
         boardSet = new BoardSet(this, getResources(), getPackageName(), xdpmm, ydpmm);
     }
 
+    public void boardFileSelector() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/zip");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(Intent.createChooser(intent,"Selectionner une planche"), 1);
+        setResult(Activity.RESULT_OK);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            Uri u = data.getData();
+            try {
+                boardManager.importBoard(u);
+            }
+            catch (IOException e) {
+                Toast.makeText(this, "Le format du fichier n'est pas valide.", Toast.LENGTH_SHORT).show();
+                boardManager.clearRecentImport();
+            }
+        }
+
+    }
 }

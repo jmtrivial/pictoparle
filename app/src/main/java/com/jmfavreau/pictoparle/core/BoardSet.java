@@ -1,17 +1,20 @@
 package com.jmfavreau.pictoparle.core;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.util.Log;
 
 import com.jmfavreau.pictoparle.PictoParleActivity;
 import com.jmfavreau.pictoparle.R;
-import com.jmfavreau.pictoparle.core.Board;
 
+import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class BoardSet {
@@ -43,7 +46,7 @@ public class BoardSet {
         // by default, no board is selected
         hasSelected = false;
 
-        // load boards
+        // load boards from assets
         try {
             loadXMLResources(resources, packagename);
         } catch (IOException e) {
@@ -51,6 +54,21 @@ public class BoardSet {
         } catch (XmlPullParserException e) {
             Log.e("PictoParle", "XML Error while reading a board.");
         }
+
+        // load boards from files
+        File boardDir = new File(getBoardDirectory());
+        if (boardDir.isDirectory())
+            for (File child : boardDir.listFiles()) {
+                if (child.isDirectory()) {
+                    try {
+                        loadFromDir(child.toString());
+                    } catch (XmlPullParserException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
 
     }
@@ -85,7 +103,7 @@ public class BoardSet {
                             xrp.getAttributeValue(null, "name"),
                             "xml", packagename);
                     XmlResourceParser parser = resources.getXml(identifier);
-                    Board b = new Board(activity, parser, xdpmm, ydpmm, true);
+                    Board b = new Board(activity, parser, xdpmm, ydpmm);
                     if (b.isValid()) {
                         boards.add(b);
                     } else {
@@ -135,6 +153,15 @@ public class BoardSet {
         return boards.get(i);
     }
 
+    public boolean hasBordByID(int id) {
+        for (int i = 0; i != boards.size(); i++) {
+            if (boards.get(i).id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Board getBoardByID(int id) throws NoSuchFieldException {
         for (int i = 0; i != boards.size(); i++) {
             if (boards.get(i).id == id) {
@@ -162,5 +189,35 @@ public class BoardSet {
         for(int i = 0; i != boards.size(); i++) {
             boards.get(i).updateSizes(xdpmm, ydpmm);
         }
+    }
+
+    public boolean loadFromDir(String boardFileLoadingLocation) throws XmlPullParserException, IOException {
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        XmlPullParser parser = factory.newPullParser();
+        parser.setInput(new InputStreamReader(new FileInputStream(new File(boardFileLoadingLocation + "/board.xml"))));
+
+        Board b = new Board(activity, parser, xdpmm, ydpmm, boardFileLoadingLocation);
+        if (b.isValid() && !hasBordByID(b.id)) {
+            boards.add(b);
+            return true;
+        }
+        return false;
+    }
+
+    public String getBoardDirectory() {
+        return activity.getApplicationContext().getFilesDir().toString() + "/" + "boards/";
+    }
+
+    public boolean removeBoardById(int id) {
+        for(int i = 0; i != boards.size(); i++) {
+            if (boards.get(i).id == id) {
+                if (!boards.get(i).isCoreBoard()) {
+                    boards.remove(i);
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
     }
 }

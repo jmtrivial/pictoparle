@@ -125,6 +125,8 @@ public class SettingFragment extends PreferenceFragmentCompat {
         activity.boardDetector.setInactive();
         activity.setScreenVisible(true);
         setTitle();
+        activity.setCurrentFragment(null);
+        activity.findViewById(R.id.add_button).setVisibility(View.GONE);
     }
 
     public void setTitle() {

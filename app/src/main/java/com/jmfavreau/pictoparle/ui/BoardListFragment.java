@@ -2,6 +2,7 @@ package com.jmfavreau.pictoparle.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,6 +121,8 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
         activity.setCurrentFragment(this);
         rebuildBoardList();
         setTitle();
+        activity.findViewById(R.id.add_button).setVisibility(View.GONE);
+
     }
 
     public void setTitle() {

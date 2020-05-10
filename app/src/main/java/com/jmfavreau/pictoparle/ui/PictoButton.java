@@ -4,14 +4,17 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
 
 import com.jmfavreau.pictoparle.AudioRenderer;
 import com.jmfavreau.pictoparle.RobustGestureDetector;
 import com.jmfavreau.pictoparle.core.Pictogram;
 
 import org.jetbrains.annotations.NotNull;
+
 
 class PictoButton extends View {
     private Pictogram pictogram;
@@ -34,9 +37,22 @@ class PictoButton extends View {
         this.pictogram = pictogram;
         this.audioRenderer = audioRenderer;
 
+        String imageFileName = pictogram.imageFileName;
+        if (imageFileName.equals(""))
+            imageFileName = "empty";
+
+
         // set image
-        if (!pictogram.imageFileName.equals("")) {
-            int id = getResources().getIdentifier(pictogram.imageFileName, "drawable", getContext().getPackageName());
+        if (pictogram.isFromDirectory()) {
+            String pathName = pictogram.getFullImagePathName();
+            Drawable image = Drawable.createFromPath(pathName);
+            if (image != null)
+                setBackground(image);
+            else
+                Log.w("PictoParle", "Unable to load " + pathName);
+        }
+        else {
+            int id = getResources().getIdentifier(imageFileName, "drawable", getContext().getPackageName());
             Drawable image = getResources().getDrawable(id);
             setBackground(image);
         }

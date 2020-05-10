@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
         activity.setCurrentFragment(this);
         setTitle();
         activity.boardDetector.setActive();
-
+        activity.findViewById(R.id.add_button).setVisibility(View.GONE);
     }
 
     public void setTitle() {

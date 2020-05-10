@@ -15,16 +15,15 @@
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:layout_weight="1" />
-    <Switch
-        android:id="@+id/active"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="right"
-        android:textOff="off"
-        android:textOn="on" />
     <Button
         android:id="@+id/remove_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:text="Supprimer" />
+    <Switch
+        android:id="@+id/active"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textOff="off"
+        android:textOn="on" />
 </LinearLayout>
