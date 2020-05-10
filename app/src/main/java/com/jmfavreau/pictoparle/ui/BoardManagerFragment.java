@@ -191,7 +191,6 @@ public class BoardManagerFragment extends Fragment {
         }
 
         boardFileLoadingLocation = null;
-        activity.audioRenderer.setSilence(false);
     }
 
     private void dirChecker(String dir) {
@@ -216,6 +215,5 @@ public class BoardManagerFragment extends Fragment {
     public void setTitle() {
         activity.getSupportActionBar().setTitle("Gestion des planches");
     }
-
 
 }

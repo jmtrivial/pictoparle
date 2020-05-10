@@ -133,9 +133,4 @@ public class SettingFragment extends PreferenceFragmentCompat {
         activity.getSupportActionBar().setTitle("Préférences");
     }
 
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
 }

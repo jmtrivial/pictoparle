@@ -291,6 +291,7 @@ public class PictoParleActivity
         if (!boardDetector.isWaiting())
             boardDetector.start();
         audioRenderer.speak("Pictoparle est prêt", "Prêt", "");
+        audioRenderer.setSilence(false);
     }
 
 
@@ -484,7 +485,6 @@ public class PictoParleActivity
                 boardManager.clearRecentImport();
             }
         }
-        audioRenderer.setSilence(false);
 
     }
 }

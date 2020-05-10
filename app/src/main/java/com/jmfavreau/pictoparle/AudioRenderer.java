@@ -35,7 +35,7 @@ public class AudioRenderer {
     }
 
     public void setSilence(boolean silence) {
-        this.silence = true;
+        this.silence = silence;
     }
 
     public void speak(String msg) {
