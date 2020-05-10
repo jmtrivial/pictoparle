@@ -16,7 +16,6 @@
             <pictogram txt="" image="" />
             <pictogram txt="" image="" />
         </row>
-        <quit width="auto" height="auto" /> <!-- in the interlines of buttons -->
         <row>
             <pictogram txt="" image="" />
             <pictogram txt="" image="" />
