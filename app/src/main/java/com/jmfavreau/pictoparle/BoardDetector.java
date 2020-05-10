@@ -48,6 +48,7 @@ public class BoardDetector  {
 
     private static final String ID_CODE = "ID_CODE";
     private static final int THRESHOLD_COVERED = 50;
+    private DataMatrixReader reader;
 
     /** A safe way to get an instance of the Camera object. */
     public static Camera getCameraInstance(){
@@ -213,6 +214,95 @@ public class BoardDetector  {
                         Log.w("PictoParle", "unable to set camera parameters");
                     }
 
+                    if (reader == null)
+                        reader = new DataMatrixReader();
+
+                    // set a preview callback to handle camera images
+                    // TODO: use setPreviewCallbackWithBuffer()?
+                    camera.setPreviewCallback(new Camera.PreviewCallback() {
+                        // inspired from https://stackoverflow.com/a/39948596
+                        @Override
+                        public void onPreviewFrame(byte[] data, Camera cam) {
+                            if (active) {
+                                long releaseTime = SystemClock.currentThreadTimeMillis();
+                                if (covered) releaseTime += interval_uncovered;
+                                else releaseTime += interval_covered;
+
+                                Camera.Size size = cam.getParameters().getPreviewSize();
+
+                                int nbPixels = size.width * size.height;
+
+                                // when resolution changed but we obtain a preview from the previous
+                                // resolution, and it's not with the good resolution...
+                                if (data.length <= nbPixels)
+                                    return;
+
+                                boolean cov = isCovered(data, nbPixels);
+
+                                if (init) {
+                                    if (cov) {
+                                        uiHandler.post(onBoardDown);
+                                    }
+                                    init = false;
+                                } else {
+                                    if (cov != covered) {
+                                        if (cov)
+                                            uiHandler.post(onBoardDown);
+                                        else
+                                            uiHandler.post(onRemoveBoard);
+                                    } else {
+                                        if (!covered) {
+                                            Integer idcode = decode(data, size);
+                                            if (idcode != null) {
+                                                idCodeDetected = idcode;
+                                                uiHandler.post(onNewHoverBoard);
+                                            }
+                                        }
+                                    }
+                                }
+                                try {
+                                    // see https://stackoverflow.com/a/5837955
+                                    long time = releaseTime - SystemClock.currentThreadTimeMillis();
+                                    if (time > 0) {
+                                        Thread.sleep(time);
+                                    }
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+
+                        private Integer decode(byte[] data, Camera.Size size) {
+                            // convert the image to a parsable version
+                            PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
+                                    data, size.width, size.height, 0, 0, size.width, size.height, false);
+                            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+                            // use zxing to read the QRCode
+                            try {
+                                Result result = reader.decode(bitmap);
+                                String text = result.getText();
+                                return Integer.parseInt(text);
+
+                            } catch (NotFoundException e) {
+                            } catch (ChecksumException e) {
+                                Log.d("PictoParle", "checksum exception");
+                            } catch (FormatException e) {
+                            }
+
+                            return null;
+                        }
+
+                        private boolean isCovered(byte[] data, int nbPixels) {
+                            float val = 0;
+                            for (int i = 0; i < nbPixels; i++) {
+                                val += data[i] & 0xFF;
+                            }
+                            val /= nbPixels;
+                            return (val < THRESHOLD_COVERED);
+                        }
+                    });
                     camera.startPreview();
                 }
             };
@@ -227,95 +317,6 @@ public class BoardDetector  {
 
                     camera = getCameraInstance();
 
-                    final Reader reader = new DataMatrixReader();
-
-                    if (camera != null) {
-                        // TODO: use setPreviewCallbackWithBuffer(),
-                        camera.setPreviewCallback(new Camera.PreviewCallback() {
-                            // inspired from https://stackoverflow.com/a/39948596
-                            @Override
-                            public void onPreviewFrame(byte[] data, Camera cam) {
-                                if (active) {
-                                    long releaseTime = SystemClock.currentThreadTimeMillis();
-                                    if (covered) releaseTime += interval_uncovered;
-                                    else releaseTime += interval_covered;
-
-                                    Camera.Size size = cam.getParameters().getPreviewSize();
-
-                                    int nbPixels = size.width * size.height;
-
-                                    // when resolution changed but we obtain a preview from the previous
-                                    // resolution, and it's not with the good resolution...
-                                    if (data.length <= nbPixels)
-                                        return;
-
-                                    boolean cov = isCovered(data, nbPixels);
-
-                                    if (init) {
-                                        if (cov) {
-                                            uiHandler.post(onBoardDown);
-                                        }
-                                        init = false;
-                                    } else {
-                                        if (cov != covered) {
-                                            if (cov)
-                                                uiHandler.post(onBoardDown);
-                                            else
-                                                uiHandler.post(onRemoveBoard);
-                                        } else {
-                                            if (!covered) {
-                                                Integer idcode = decode(data, size);
-                                                if (idcode != null) {
-                                                    idCodeDetected = idcode;
-                                                    uiHandler.post(onNewHoverBoard);
-                                                }
-                                            }
-                                        }
-                                    }
-                                    try {
-                                        // see https://stackoverflow.com/a/5837955
-                                        long time = releaseTime - SystemClock.currentThreadTimeMillis();
-                                        if (time > 0) {
-                                            Thread.sleep(time);
-                                        }
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-
-
-                            private Integer decode(byte[] data, Camera.Size size) {
-                                // convert the image to a parsable version
-                                PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
-                                        data, size.width, size.height, 0, 0, size.width, size.height, false);
-                                BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-
-                                // use zxing to read the QRCode
-                                try {
-                                    Result result = reader.decode(bitmap);
-                                    String text = result.getText();
-                                    return Integer.parseInt(text);
-
-                                } catch (NotFoundException e) {
-                                } catch (ChecksumException e) {
-                                    Log.d("PictoParle", "checksum exception");
-                                } catch (FormatException e) {
-                                }
-
-                                return null;
-                            }
-
-                            private boolean isCovered(byte[] data, int nbPixels) {
-                                float val = 0;
-                                for (int i = 0; i < nbPixels; i++) {
-                                    val += data[i] & 0xFF;
-                                }
-                                val /= nbPixels;
-                                return (val < THRESHOLD_COVERED);
-                            }
-                        });
-                    }
 
                     notifyCameraOpened();
                 }
@@ -401,6 +402,7 @@ public class BoardDetector  {
         this.interval_uncovered = interval_uncovered;
 
         surfaceTexture = null;
+        reader = null;
 
         // by default, the board is covered
         covered = true;
