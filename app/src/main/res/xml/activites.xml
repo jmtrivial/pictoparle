@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<board id="3" name="activités" layout="vertical">
+<board id="3" name="activités" orientation="vertical">
     <cells cellWidth="31.25" cellHeight="25">
         <row><pictogram txt="oui" image="oui" /></row>
         <row><pictogram txt="non" image="non" /></row>

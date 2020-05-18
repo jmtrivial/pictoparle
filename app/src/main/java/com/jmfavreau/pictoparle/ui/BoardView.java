@@ -45,7 +45,7 @@ class BoardView extends LinearLayout {
                      RobustGestureDetector.RobustGestureDetectorParams params) {
         super(context);
 
-        if (board.orientation == "vertical") {
+        if (board.orientation.equals("vertical")) {
             setOrientation(LinearLayout.VERTICAL);
             horizontal = false;
         }
@@ -201,10 +201,11 @@ class BoardView extends LinearLayout {
         }
         else {
             Point span = computeSpanSize(panel, false);
-            if (horizontal)
+            if (horizontal) {
                 return panel.nbColumns * (panel.cellWidthPX + span.x) - span.x;
-            else
+            } else {
                 return panel.nbRows * (panel.cellHeightPX + span.y) - span.y;
+            }
         }
     }
 
@@ -212,8 +213,16 @@ class BoardView extends LinearLayout {
         Point size = new Point();
         activity.getWindowManager().getDefaultDisplay().getRealSize(size);
 
-        int x = (int) Math.floor(((float) size.x - panel.nbColumns * panel.cellWidthPX) / (panel.nbColumns - 1));
-        int y = (int) Math.floor(((float) size.y - panel.nbRows * panel.cellHeightPX) / (panel.nbRows - 1));
+        if (panel.nbColumns == 0 || panel.nbRows == 0)
+            return new Point(0, 0);
+
+        int x = 0;
+        if (panel.nbColumns > 1)
+            x = (int) Math.floor(((float) size.x - panel.nbColumns * panel.cellWidthPX) / (panel.nbColumns - 1));
+        int y = 0;
+        if (panel.nbRows > 1)
+            y = (int) Math.floor(((float) size.y - panel.nbRows * panel.cellHeightPX) / (panel.nbRows - 1));
+
         if (!single) {
             if (horizontal) { x = y; }
             else { y = x; }
