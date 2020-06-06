@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <board id="4" name="objets" orientation="horizontal">
-    <cells cellWidth="31.25" cellHeight="25">
+    <cells cellWidth="31.25" cellHeight="25" padding="2">
         <row><pictogram txt="oui" image="oui" /></row>
         <row><pictogram txt="non" image="non" /></row>
         <row><pictogram txt="fini" image="fini" /></row>
@@ -10,7 +10,7 @@
     <cells>
         <quit width="10" height="10" />
     </cells>
-    <cells cellWidth="50" cellHeight="40">
+    <cells cellWidth="50" cellHeight="40" padding="2">
         <row>
             <pictogram txt="mouchoir" image="mouchoir" />
             <pictogram txt="classeur de vie" image="classeur_de_vie" />

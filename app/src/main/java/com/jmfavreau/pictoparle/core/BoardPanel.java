@@ -20,8 +20,11 @@ public class BoardPanel {
 
     private double cellWidth;
     private double cellHeight;
+    private double cellPadding;
     public int cellWidthPX;
     public int cellHeightPX;
+    public int cellPaddingXPX;
+    public int cellPaddingYPX;
 
     public int nbColumns;
     public int nbRows;
@@ -32,7 +35,6 @@ public class BoardPanel {
     private boolean hasFiles;
 
     private ArrayList<ArrayList<Pictogram>> cells;
-
 
 
     public BoardPanel(XmlPullParser parser, float xdpmm, float ydpmm,
@@ -80,6 +82,8 @@ public class BoardPanel {
                         if (v != null)  cellWidth = Double.parseDouble(v);
                         v = parser.getAttributeValue(null, "cellHeight");
                         if (v != null) cellHeight = Double.parseDouble(v);
+                        v = parser.getAttributeValue(null, "padding");
+                        if (v != null) cellPadding = Double.parseDouble(v);
                         break;
                     case "row":
                         this.cells.add(new ArrayList<Pictogram>());
@@ -126,6 +130,8 @@ public class BoardPanel {
         this.ydpmm = ydpmm;
         this.cellWidthPX = toPXX(cellWidth);
         this.cellHeightPX = toPXY(cellHeight);
+        this.cellPaddingXPX = toPXX(cellPadding);
+        this.cellPaddingYPX = toPXY(cellPadding);
         this.heightQuitButtonPX = toPXX(heightQuitButton);
         this.widthQuitButtonPX = toPXX(widthQuitButton);
     }

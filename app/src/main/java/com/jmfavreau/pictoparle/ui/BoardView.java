@@ -131,7 +131,9 @@ class BoardView extends LinearLayout {
 
                 try {
                     PictoButton picto = new PictoButton(context, activity.audioRenderer,
-                            panel.getPictogram(i, j), panel.cellWidthPX, panel.cellHeightPX, params);
+                            panel.getPictogram(i, j), panel.cellWidthPX, panel.cellHeightPX,
+                            panel.cellPaddingXPX, panel.cellPaddingYPX,
+                            params);
                     buttons.add(picto);
                     row.addView(picto);
                 }
