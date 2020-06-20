@@ -114,15 +114,19 @@ public class BoardDetector  {
             runnerActive = new Runnable() {
                 @Override
                 public void run() {
+                    if (camera == null)
+                        return;
+
                     // create a surface to get resulting images
                     if (surfaceTexture == null) {
                         surfaceTexture = new SurfaceTexture(10);
                     }
-
                     try {
                         camera.setPreviewTexture(surfaceTexture);
                     } catch (Exception e) {
                         Log.e("PictoParle", "Cannot create a surface texture: " + e.toString());
+                        if (camera != null)
+                            camera.stopPreview();
                         setErrorInActivation();
                         return;
                     }
