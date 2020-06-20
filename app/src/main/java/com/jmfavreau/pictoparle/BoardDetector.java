@@ -348,12 +348,14 @@ public class BoardDetector  {
         }
 
         void setActive() {
-            workerHandler.post(runnerActive);
+            if (workerHandler != null)
+                workerHandler.post(runnerActive);
         }
 
 
         void setInactive() {
-            workerHandler.post(runnerInactive);
+            if (workerHandler != null)
+                workerHandler.post(runnerInactive);
         }
 
         // TODO: remove that
