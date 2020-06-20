@@ -39,7 +39,7 @@ public class Pictogram {
     public boolean checkHasFilesInDirectory(Context context) {
         if (directory == null)
             return true;
-        if (!imageFileName.equals("")) {
+        if (imageFileName != null && !imageFileName.equals("")) {
             File f = new File(getFullImagePathName());
             if (!f.exists()) {
                 Log.w("PictoParle", "Unable to find " + imageFileName);
@@ -47,7 +47,7 @@ public class Pictogram {
             }
         }
 
-        if (!audioFileName.equals("")) {
+        if (audioFileName != null && !audioFileName.equals("")) {
             File f = new File(getFullAudioPathName());
             if (!f.exists()) {
                 Log.w("PictoParle", "Unable to find " + audioFileName);
