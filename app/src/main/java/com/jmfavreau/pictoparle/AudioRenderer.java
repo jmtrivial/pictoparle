@@ -1,19 +1,27 @@
 package com.jmfavreau.pictoparle;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 
+import java.io.IOException;
 import java.util.Locale;
+
+import static android.media.AudioManager.STREAM_MUSIC;
 
 public class AudioRenderer {
     private TextToSpeech tts;
     private String lang;
     private int audio_verbosity;
     private boolean silence;
+    private MediaPlayer mPlayer;
+    private Context context;
 
     public AudioRenderer(Context context, String l) {
         this.lang = l;
         this.audio_verbosity = 1;
+        this.context = context;
         // set text-to-speech method with the good language
         tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
@@ -27,6 +35,10 @@ public class AudioRenderer {
             }
         });
         silence = false;
+
+        mPlayer = new MediaPlayer();
+        mPlayer.setAudioStreamType(STREAM_MUSIC);
+        Log.d("Pictoparle", "on start le mplayer");
 
     }
 
@@ -68,4 +80,15 @@ public class AudioRenderer {
     }
 
 
+    public void playSound(String file) {
+        if (!silence) {
+            try {
+                mPlayer.reset();
+                mPlayer.setDataSource(file);
+                mPlayer.prepare();
+                mPlayer.start();
+            } catch (IOException e) {
+            }
+        }
+    }
 }

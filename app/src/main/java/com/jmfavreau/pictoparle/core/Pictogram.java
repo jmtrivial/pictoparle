@@ -47,12 +47,21 @@ public class Pictogram {
             }
         }
 
-        // TODO: add sound check
-
+        if (!audioFileName.equals("")) {
+            File f = new File(getFullAudioPathName());
+            if (!f.exists()) {
+                Log.w("PictoParle", "Unable to find " + audioFileName);
+                return false;
+            }
+        }
         return true;
     }
 
     public String getFullImagePathName() {
         return directory + "/pictograms/" + imageFileName;
+    }
+
+    public String getFullAudioPathName() {
+        return directory + "/audio/" + audioFileName;
     }
 }

@@ -18,12 +18,12 @@ import com.jmfavreau.pictoparle.core.Pictogram;
 import org.jetbrains.annotations.NotNull;
 
 
+
 class PictoButton extends LinearLayout {
     private Pictogram pictogram;
-
     private RobustGestureDetector gestureDetector;
 
-
+    private String audioFile;
     private AudioRenderer audioRenderer;
 
     // default constructor, will not be used
@@ -39,6 +39,12 @@ class PictoButton extends LinearLayout {
 
         this.pictogram = pictogram;
         this.audioRenderer = audioRenderer;
+
+        if (pictogram.audioFileName != null && pictogram.audioFileName != "") {
+            audioFile = pictogram.getFullAudioPathName();
+        }
+        else
+            audioFile = null;
 
         String imageFileName = pictogram.imageFileName;
         if (imageFileName.equals(""))
@@ -111,10 +117,14 @@ class PictoButton extends LinearLayout {
 
     public void playSound() {
         if (pictogram != null && !pictogram.isEmpty()) {
-            // play sound using text-to-speech
-            audioRenderer.speak(pictogram.txt);
-
-            // TODO: if an audio file is available, play it rather than using text-to-speech
+            // if an audio file is available, play it
+            if (audioFile != null) {
+                audioRenderer.playSound(audioFile);
+            }
+            else {
+                // if not, use text-to-speech
+                audioRenderer.speak(pictogram.txt);
+            }
         }
     }
 
