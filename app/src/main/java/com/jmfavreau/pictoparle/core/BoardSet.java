@@ -213,6 +213,9 @@ public class BoardSet {
             if (boards.get(i).id == id) {
                 if (!boards.get(i).isCoreBoard()) {
                     boards.remove(i);
+                    if (id == selected) {
+                        setSelectedDefault();
+                    }
                     return true;
                 }
                 return false;

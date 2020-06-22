@@ -148,7 +148,7 @@ public class BoardManagerFragment extends Fragment {
 
 
     public void importBoard(Uri u) throws IOException {
-        // create targer directory
+        // create target directory
         File folder = new File(activity.boardSet.getBoardDirectory());
         boardFileLoadingLocation = folder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "/";
         File bdir = new File(boardFileLoadingLocation);
