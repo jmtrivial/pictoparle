@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board id="42" name="Oui non" orientation="vertical">
+    <cells cellWidth="50" cellHeight="40" padding="2">
+        <row>
+            <pictogram txt="oui" image="oui" />
+            <pictogram txt="non" image="non" />
+        </row>
+    </cells>
+    <cells>
+        <quit width="10" height="10" />
+    </cells>
+</board>

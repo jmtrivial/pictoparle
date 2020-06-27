@@ -1,15 +1,20 @@
 package com.jmfavreau.pictoparle.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
+import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import com.jmfavreau.pictoparle.PictoParleActivity;
 import com.jmfavreau.pictoparle.R;
@@ -25,10 +30,22 @@ public class SettingFragment extends PreferenceFragmentCompat {
     private Preference double_tap_timeout;
     private Preference tap_timeout;
     private Preference audio_verbosity;
+    private Preference device_model;
+    private ArrayMap<String, Float> screenWidth;
+    private ArrayMap<String, Float> screenHeight;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
+        screenWidth = new ArrayMap<>();
+        screenHeight = new ArrayMap<>();
+        screenWidth.put("lenovo-tab-e10", 216.0f);
+        screenHeight.put("lenovo-tab-e10", 135.0f);
+        screenWidth.put("samsung-galaxy-a3", 106.0f);
+        screenHeight.put("samsung-galaxy-a3", 60.5f);
+        screenWidth.put("custom", -1.0f);
+        screenHeight.put("custom", -1.0f);
+
     }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -58,7 +75,9 @@ public class SettingFragment extends PreferenceFragmentCompat {
         screen_width_mm.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                activity.setScreenWidthMM(Float.valueOf(newValue.toString()));
+                float value = Float.valueOf(newValue.toString());
+                activity.setScreenWidthMM(value);
+                screenWidth.put("custom", value);
                 return true;
             }
         });
@@ -67,7 +86,9 @@ public class SettingFragment extends PreferenceFragmentCompat {
         screen_height_mm.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                activity.setScreenHeightMM(Float.valueOf(newValue.toString()));
+                float value = Float.valueOf(newValue.toString());
+                activity.setScreenHeightMM(value);
+                screenHeight.put("custom", value);
                 return true;
             }
         });
@@ -116,6 +137,16 @@ public class SettingFragment extends PreferenceFragmentCompat {
                 return true;
             }
         });
+
+        device_model = getPreferenceManager().findPreference("device_model");
+        device_model.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                setScreenSizeSettings(newValue.toString());
+                return true;
+            }
+        });
+
         return result;
     }
 
@@ -126,7 +157,35 @@ public class SettingFragment extends PreferenceFragmentCompat {
         activity.setScreenVisible(true);
         setTitle();
         activity.setCurrentFragment(null);
+        setScreenSizeSettings();
         activity.findViewById(R.id.add_button).setVisibility(View.GONE);
+    }
+
+
+    private String deviceName() {
+        if (device_model instanceof ListPreference) {
+            ListPreference listPref = (ListPreference) device_model;
+            return listPref.getValue();
+        }
+        else {
+            return "custom";
+        }
+    }
+    private void setScreenSizeSettings() {
+        screenWidth.put("custom", Float.valueOf(((EditTextPreference) screen_width_mm).getText()));
+        screenHeight.put("custom", Float.valueOf(((EditTextPreference) screen_height_mm).getText()));
+        setScreenSizeSettings(deviceName());
+    }
+
+    private void setScreenSizeSettings(String value) {
+        screen_width_mm.setVisible(value.equals("custom"));
+        screen_height_mm.setVisible(value.equals("custom"));
+        EditTextPreference editWPref = (EditTextPreference) screen_width_mm;
+        editWPref.setText(String.valueOf(screenWidth.get(value)));
+        EditTextPreference editHPref = (EditTextPreference) screen_height_mm;
+        editHPref.setText(String.valueOf(screenHeight.get(value)));
+        activity.setScreenWidthMM(screenWidth.get(value));
+        activity.setScreenHeightMM(screenHeight.get(value));
     }
 
     public void setTitle() {

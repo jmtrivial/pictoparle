@@ -74,6 +74,16 @@
             android:summary="Pour économiser l'énergie de la tablette, on peur réduire la luminosité de l'écran quand il affiche une planche."
             android:defaultValue="true" />
 
+        <ListPreference
+            app:key="device_model"
+            app:title="Appareil"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/device_model"
+            app:entryValues="@array/device_model_values"
+            app:defaultValue="lenovo-tab-e10"
+            app:dialogTitle="Modèle de tablette ou téléphone." />
+
+
         <EditTextPreference
             android:key="screen_width_mm"
             android:inputType="numberDecimal"

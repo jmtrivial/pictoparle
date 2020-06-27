@@ -1,6 +1,7 @@
 package com.jmfavreau.pictoparle.core;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

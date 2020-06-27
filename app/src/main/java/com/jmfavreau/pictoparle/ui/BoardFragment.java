@@ -32,19 +32,24 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
                              @Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = (PictoParleActivity) getActivity();
+        activity.boardFragment = this;
 
         // create all the views of this activity
+        createViews();
+
+        view = new FrameLayout(getContext());
+        view.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+
+        return view;
+    }
+
+    public void createViews() {
         views = new TreeMap<>();
         for(int i = 0; i != activity.boardSet.size(); i++) {
             views.put(activity.boardSet.get(i).id, new BoardView(activity,
                     activity.boardSet.get(i), activity,
                     activity.params));
         }
-
-        view = new FrameLayout(getContext());
-        view.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-
-        return view;
     }
 
     @Override

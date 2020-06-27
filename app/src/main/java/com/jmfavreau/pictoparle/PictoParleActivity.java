@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.jmfavreau.pictoparle.core.Board;
 import com.jmfavreau.pictoparle.core.BoardSet;
+import com.jmfavreau.pictoparle.ui.BoardFragment;
 import com.jmfavreau.pictoparle.ui.BoardManagerFragment;
 
 import java.io.IOException;
@@ -77,6 +78,7 @@ public class PictoParleActivity
     private boolean waitForNew;
     private boolean readExternal;
     public BoardManagerFragment boardManager;
+    public BoardFragment boardFragment;
 
     // a function to show explanation when asking permission
     private void showExplanation(String title,
@@ -202,8 +204,17 @@ public class PictoParleActivity
 
         active_board_detection = preferences.getBoolean("board_detection", true);
 
-        screenWidthMM = Float.parseFloat(preferences.getString("screen_width_mm", "216"));
-        screenHeightMM = Float.parseFloat(preferences.getString("screen_height_mm", "135"));
+        String w = preferences.getString("screen_width_mm", "216");
+        if (w != null && !w.equals("null"))
+            screenWidthMM = Float.parseFloat(w);
+        else
+            screenWidthMM = 216.0f;
+
+        String h = preferences.getString("screen_height_mm", "135");
+        if (h != null && !h.equals("null"))
+            screenHeightMM = Float.parseFloat(h);
+        else
+            screenHeightMM = 135.0f;
 
         interval_covered = Integer.parseInt(preferences.getString("interval_covered", "4000"));
         interval_uncovered = Integer.parseInt(preferences.getString("interval_uncovered", "1000"));
@@ -453,6 +464,9 @@ public class PictoParleActivity
         float xdpmm = (float) size.x / screenWidthMM;
         float ydpmm = (float) size.y / screenHeightMM;
         boardSet.updateSizes(xdpmm, ydpmm);
+        Log.d("Pictoparle", "updateScreenSizer");
+        if (boardFragment != null)
+            boardFragment.createViews();
     }
 
     public void loadBoards() {
