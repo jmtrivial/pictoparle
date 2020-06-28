@@ -257,6 +257,7 @@ public class BoardDetector  {
                                     } else {
                                         if (!covered) {
                                             Integer idcode = decode(data, size);
+
                                             if (idcode != null && idcode >= 0) {
                                                 idCodeDetected = idcode;
                                                 uiHandler.post(onNewHoverBoard);
@@ -295,10 +296,12 @@ public class BoardDetector  {
                                 return Integer.parseInt(text);
 
                             } catch (NotFoundException e) {
+                                Log.d("PictoParle", "checksum not found");
                             } catch (ChecksumException e) {
                                 Log.d("PictoParle", "checksum exception");
                                 return -1;
                             } catch (FormatException e) {
+                                Log.d("PictoParle", "format exception (checksum)");
                                 return -1;
                             }
 
@@ -307,10 +310,12 @@ public class BoardDetector  {
 
                         private boolean isCovered(byte[] data, int nbPixels) {
                             float val = 0;
-                            for (int i = 0; i < nbPixels; i++) {
+                            int step = 5; // do not consider all pixels to speedup the process
+                            for (int i = 0; i < nbPixels; i += step) {
                                 val += data[i] & 0xFF;
                             }
                             val /= nbPixels;
+                            val *= step;
                             return (val < THRESHOLD_COVERED);
                         }
                     });
