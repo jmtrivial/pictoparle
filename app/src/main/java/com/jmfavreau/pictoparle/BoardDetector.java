@@ -186,7 +186,14 @@ public class BoardDetector  {
                     else {
                         param.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
 
-                        CameraConfigurationUtils.setFocus(param, CameraSettings.FocusMode.MACRO, true);
+                        if (param.getFocusMode() != null) {
+                            List<String> focusModes = param.getSupportedFocusModes();
+                            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO))
+                                param.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+                            else
+                                param.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
+                        }
+
 
                         List<Camera.Size> prevResolutions = param.getSupportedPreviewSizes();
                         Collections.sort(prevResolutions, new Comparator<Camera.Size>() {
