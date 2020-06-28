@@ -257,9 +257,14 @@ public class BoardDetector  {
                                     } else {
                                         if (!covered) {
                                             Integer idcode = decode(data, size);
-                                            if (idcode != null) {
+                                            if (idcode != null && idcode >= 0) {
                                                 idCodeDetected = idcode;
                                                 uiHandler.post(onNewHoverBoard);
+                                            }
+                                            else if (idcode != null && idcode == -1) {
+                                                // if a qrcode has been seen, but cannot be recognize
+                                                // we try it immediately
+                                                releaseTime = 0;
                                             }
                                         }
                                     }
@@ -292,7 +297,9 @@ public class BoardDetector  {
                             } catch (NotFoundException e) {
                             } catch (ChecksumException e) {
                                 Log.d("PictoParle", "checksum exception");
+                                return -1;
                             } catch (FormatException e) {
+                                return -1;
                             }
 
                             return null;
