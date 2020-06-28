@@ -95,11 +95,22 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
                 String boardName = activity.boardSet.getSelectedBoard().name;
                 activity.audioRenderer.speak("La planche \"" + boardName + "\" est active",
                         "Planche " + boardName + " active", activity.boardSet.getSelectedBoard().name);
-                Navigation.findNavController(view).popBackStack();
+                activity.forceManualBoardDown();
+            }
+        });
+
+        activity.findViewById(R.id.edit_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editBoards();
             }
         });
 
         return view;
+    }
+
+    private void editBoards() {
+        Navigation.findNavController(view).navigate(R.id.edit_boards);
     }
 
     private void rebuildBoardList() {
@@ -122,6 +133,7 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
         rebuildBoardList();
         setTitle();
         activity.findViewById(R.id.add_button).setVisibility(View.GONE);
+        activity.findViewById(R.id.edit_button).setVisibility(View.VISIBLE);
 
     }
 

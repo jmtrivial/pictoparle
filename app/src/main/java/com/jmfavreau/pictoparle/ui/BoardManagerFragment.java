@@ -179,6 +179,7 @@ public class BoardManagerFragment extends Fragment {
 
         }
         zin.close();
+        zin.close();
 
         // load board
         try {
@@ -210,6 +211,7 @@ public class BoardManagerFragment extends Fragment {
         setTitle();
         activity.setCurrentFragment(null);
         activity.findViewById(R.id.add_button).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.edit_button).setVisibility(View.GONE);
     }
 
     public void setTitle() {

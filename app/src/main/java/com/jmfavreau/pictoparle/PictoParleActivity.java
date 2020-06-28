@@ -262,7 +262,7 @@ public class PictoParleActivity
         return true;
     }
 
-    private void forceManualBoardDown() {
+    public void forceManualBoardDown() {
         if (boardSet.getHasSelected()) {
             manualBoardOnScreen = true;
             onBoardDown();

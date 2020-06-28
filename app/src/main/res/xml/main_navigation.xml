@@ -16,8 +16,10 @@
     <fragment android:id="@+id/board_list_fragment"
         android:label="Choix d'une planche"
         android:name="com.jmfavreau.pictoparle.ui.BoardListFragment">
-            <action android:id="@+id/view_board_from_board_list"
-                app:destination="@id/picto_board" />
+        <action android:id="@+id/view_board_from_board_list"
+            app:destination="@id/picto_board" />
+        <action android:id="@+id/edit_boards"
+            app:destination="@id/manage_boards" />
     </fragment>
     <fragment android:id="@+id/manage_boards"
         android:name="com.jmfavreau.pictoparle.ui.BoardManagerFragment"/>

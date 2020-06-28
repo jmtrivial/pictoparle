@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,7 +48,7 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
 
         home = LayoutInflater.from(getContext()).inflate(R.layout.waiting_for_board, container, false);
 
-        Button button = home.findViewById(R.id.select_in_list);
+        ImageButton button = home.findViewById(R.id.select_in_list);
 
         // connect button
         button.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +69,7 @@ public class HomeFragment extends Fragment implements BoardDetector.SimpleBoardL
         setTitle();
         activity.boardDetector.setActive();
         activity.findViewById(R.id.add_button).setVisibility(View.GONE);
+        activity.findViewById(R.id.edit_button).setVisibility(View.GONE);
     }
 
     public void setTitle() {
