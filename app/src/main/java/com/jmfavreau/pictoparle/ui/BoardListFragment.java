@@ -92,9 +92,6 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 activity.boardSet.setSelected(boardsAdapter.getItem(position).id);
-                String boardName = activity.boardSet.getSelectedBoard().name;
-                activity.audioRenderer.speak("La planche \"" + boardName + "\" est active",
-                        "Planche " + boardName + " active", activity.boardSet.getSelectedBoard().name);
                 activity.forceManualBoardDown();
             }
         });
@@ -125,8 +122,8 @@ public class BoardListFragment extends Fragment implements BoardDetector.SimpleB
 
     @Override
     public void onResume() {
-        activity.audioRenderer.speak("Choix d'une planche", "");
         super.onResume();
+        activity.audioRenderer.speak("Choix d'une planche", "");
         activity.boardDetector.setActive();
         activity.setScreenVisible(true);
         activity.setCurrentFragment(this);
