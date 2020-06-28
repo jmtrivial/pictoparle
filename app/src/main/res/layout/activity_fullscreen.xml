@@ -18,24 +18,24 @@
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/ToolbarTheme"
             android:elevation="4dp">
-            <Button
+            <ImageButton
+                android:visibility="gone"
                 android:id="@+id/add_button"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
-                android:background="@color/colorPrimary"
-                android:textColor="#ffffff"
-                android:text="Ajouter" />
-            <Button
+                android:scaleType="fitCenter"
+                android:background="@color/zxing_transparent"
+                android:src="@drawable/ic_plus" />
+            <ImageButton
+                android:visibility="gone"
                 android:id="@+id/edit_button"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:background="@color/zxing_transparent"
                 android:layout_gravity="right"
-                android:background="@color/colorPrimary"
-                android:textColor="#ffffff"
-                android:text="Éditer" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_edit"  />
 
         </androidx.appcompat.widget.Toolbar>
 
