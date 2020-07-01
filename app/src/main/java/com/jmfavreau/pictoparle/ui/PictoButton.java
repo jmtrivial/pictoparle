@@ -46,15 +46,16 @@ class PictoButton extends LinearLayout {
         else
             audioFile = null;
 
+
         String imageFileName = pictogram.imageFileName;
-        if (imageFileName.equals(""))
+        if (imageFileName == null || imageFileName.equals(""))
             imageFileName = "empty";
 
         View imageView = new View(context);
         int x = 0;
         int y = 0;
         // set image
-        if (pictogram.isFromDirectory()) {
+        if (pictogram.isImageFromDirectory()) {
             String pathName = pictogram.getFullImagePathName();
             Drawable image = Drawable.createFromPath(pathName);
 
@@ -116,7 +117,7 @@ class PictoButton extends LinearLayout {
     }
 
     public void playSound() {
-        if (pictogram != null && !pictogram.isEmpty()) {
+        if (pictogram != null) {
             // if an audio file is available, play it
             if (audioFile != null) {
                 audioRenderer.playSound(audioFile);

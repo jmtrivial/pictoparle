@@ -23,7 +23,6 @@ public class BoardSet {
     /**
      * true DPI cannot be get from the Android API. Thus it is a parameter of the application
      */
-    /* TODO: add a menu entry to change these values */
     private float xdpmm;
     private float ydpmm;
 

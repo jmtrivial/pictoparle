@@ -54,7 +54,7 @@ public class BoardPanel {
         hasFiles = true;
         for(int i = 0; i != this.cells.size(); ++i) {
             for(int j = 0; j != this.cells.get(i).size(); ++j) {
-                if (!this.cells.get(i).get(j).checkHasFilesInDirectory(context)) {
+                if (!this.cells.get(i).get(j).checkHasFilesInDirectory()) {
                     hasFiles = false;
                     break;
                 }
@@ -166,7 +166,8 @@ public class BoardPanel {
     public Pictogram getPictogram(int i, int j) {
         if (this.cells.size() <= i || this.cells.get(i).size() < j)
             return Pictogram.empty();
-        else
+        else {
             return this.cells.get(i).get(j);
+        }
     }
 }
