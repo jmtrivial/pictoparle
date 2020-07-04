@@ -31,13 +31,14 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
-import com.jmfavreau.pictoparle.core.Board;
 import com.jmfavreau.pictoparle.core.BoardSet;
+import com.jmfavreau.pictoparle.interactions.AudioRenderer;
+import com.jmfavreau.pictoparle.interactions.BoardDetector;
+import com.jmfavreau.pictoparle.interactions.RobustGestureDetector;
 import com.jmfavreau.pictoparle.ui.BoardFragment;
 import com.jmfavreau.pictoparle.ui.BoardManagerFragment;
 
 import java.io.IOException;
-import java.net.URI;
 
 
 /*

@@ -2,7 +2,6 @@ package com.jmfavreau.pictoparle.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.jmfavreau.pictoparle.BoardDetector;
+import com.jmfavreau.pictoparle.interactions.BoardDetector;
 import com.jmfavreau.pictoparle.PictoParleActivity;
 import com.jmfavreau.pictoparle.R;
 import com.jmfavreau.pictoparle.core.Board;

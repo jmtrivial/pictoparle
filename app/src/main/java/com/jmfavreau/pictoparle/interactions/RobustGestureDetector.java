@@ -1,4 +1,4 @@
-package com.jmfavreau.pictoparle;
+package com.jmfavreau.pictoparle.interactions;
 
 
 import android.content.Context;

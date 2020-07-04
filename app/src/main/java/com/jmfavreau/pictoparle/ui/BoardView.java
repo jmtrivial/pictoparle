@@ -16,7 +16,7 @@ import android.widget.Space;
 
 import com.jmfavreau.pictoparle.PictoParleActivity;
 import com.jmfavreau.pictoparle.R;
-import com.jmfavreau.pictoparle.RobustGestureDetector;
+import com.jmfavreau.pictoparle.interactions.RobustGestureDetector;
 import com.jmfavreau.pictoparle.core.Board;
 import com.jmfavreau.pictoparle.core.BoardPanel;
 

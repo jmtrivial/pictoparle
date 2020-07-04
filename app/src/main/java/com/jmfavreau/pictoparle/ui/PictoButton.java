@@ -11,8 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 
-import com.jmfavreau.pictoparle.AudioRenderer;
-import com.jmfavreau.pictoparle.RobustGestureDetector;
+import com.jmfavreau.pictoparle.interactions.AudioRenderer;
+import com.jmfavreau.pictoparle.interactions.RobustGestureDetector;
 import com.jmfavreau.pictoparle.core.Pictogram;
 
 import org.jetbrains.annotations.NotNull;
