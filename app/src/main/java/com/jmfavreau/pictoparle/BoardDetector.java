@@ -300,6 +300,7 @@ public class BoardDetector  {
                             try {
                                 Result result = reader.decode(bitmap);
                                 String text = result.getText();
+                                Log.d("PictoParle", "Found QRcode: " + text);
                                 return Integer.parseInt(text);
 
                             } catch (NotFoundException e) {
