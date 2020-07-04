@@ -47,7 +47,7 @@ public class BoardDetector  {
     private int idCodeDetected;
 
     private static final String ID_CODE = "ID_CODE";
-    private static final int THRESHOLD_COVERED = 50;
+    private static final int THRESHOLD_COVERED = 5;
     private DataMatrixReader reader;
 
     /** A safe way to get an instance of the Camera object. */
