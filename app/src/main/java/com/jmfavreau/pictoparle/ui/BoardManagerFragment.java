@@ -41,7 +41,7 @@ public class BoardManagerFragment extends Fragment {
     private BoardsAdapter boardsAdapter;
     private PictoParleActivity activity;
     private View view;
-    private String boardFileLoadingLocation;
+    private static String boardFileLoadingLocation;
 
 
     public static void deleteRecursive(File fileOrDirectory) {
@@ -51,7 +51,7 @@ public class BoardManagerFragment extends Fragment {
 
         fileOrDirectory.delete();
     }
-    public void clearRecentImport() {
+    public static void clearRecentImport() {
         deleteRecursive(new File(boardFileLoadingLocation));
     }
 
@@ -191,7 +191,6 @@ public class BoardManagerFragment extends Fragment {
             clearRecentImport();
         }
 
-        boardFileLoadingLocation = null;
     }
 
     private void dirChecker(String dir) {

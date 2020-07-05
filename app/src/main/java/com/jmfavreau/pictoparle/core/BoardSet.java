@@ -1,11 +1,16 @@
 package com.jmfavreau.pictoparle.core;
 
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.jmfavreau.pictoparle.PictoParleActivity;
 import com.jmfavreau.pictoparle.R;
+import com.jmfavreau.pictoparle.ui.BoardManagerFragment;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,6 +34,8 @@ public class BoardSet {
 
     protected ArrayList<Board> boards;
     private int selected;
+
+    private Board tmpBoard;
 
     private boolean hasSelected;
 
@@ -195,10 +202,48 @@ public class BoardSet {
         XmlPullParser parser = factory.newPullParser();
         parser.setInput(new InputStreamReader(new FileInputStream(new File(boardFileLoadingLocation + "/board.xml"))));
 
-        Board b = new Board(activity, parser, xdpmm, ydpmm, boardFileLoadingLocation);
-        if (b.isValid() && !hasBordByID(b.id)) {
-            boards.add(b);
-            return true;
+        tmpBoard = new Board(activity, parser, xdpmm, ydpmm, boardFileLoadingLocation);
+        if (tmpBoard.isValid()) {
+            if (hasBordByID(tmpBoard.id)) {
+                Board b_old;
+                try {
+                    b_old = getBoardByID(tmpBoard.id);
+                }
+                catch (Exception e) { return false; }
+                if (b_old.isCoreBoard()) {
+                    Toast.makeText(activity, "Impossible de charger une planche qui possède le même identifiant qu'une planche fixe.", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                else {
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    removeBoardById(tmpBoard.id);
+                                    boards.add(tmpBoard);
+                                    Toast.makeText(activity, "Planche " + tmpBoard.name + " chargée.", Toast.LENGTH_SHORT).show();
+                                    break;
+
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    BoardManagerFragment.clearRecentImport();
+                                    //No button clicked
+                                    break;
+                            }
+                        }
+                    };
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setMessage("Voulez-vous remplacer la planche \"" + b_old.name + "\" par la planche \"" + tmpBoard.name + "\"?").setPositiveButton("Remplacer", dialogClickListener)
+                            .setNegativeButton("Annuler", dialogClickListener).show();
+                    return true;
+                }
+            }
+            else {
+                boards.add(tmpBoard);
+                Toast.makeText(activity, "Planche " + tmpBoard.name + " chargée.", Toast.LENGTH_SHORT).show();
+                return true;
+            }
         }
         return false;
     }
