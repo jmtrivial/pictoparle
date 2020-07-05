@@ -75,13 +75,20 @@ public class AudioRenderer {
     }
 
     private void speakInternal(String msg) {
-        if (!msg.equals(""))
-            tts.speak(msg,  TextToSpeech.QUEUE_FLUSH, null);
+        if (!msg.equals("")) {
+            // stop the audio player if it is playing
+            mPlayer.reset();
+            // use text-to-speech to generate sound
+            tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null);
+        }
     }
 
 
     public void playSound(String file) {
         if (!silence) {
+            // stop text-to-speech if it is talking
+            tts.stop();
+            // play audio file
             try {
                 mPlayer.reset();
                 mPlayer.setDataSource(file);
