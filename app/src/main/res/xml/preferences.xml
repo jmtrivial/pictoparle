@@ -28,17 +28,32 @@
             android:inputType="numberDecimal"
             android:title="Durée maximum d'un tap (en milliseconde)"
             android:summary="Durée maximum pour laquelle un doigt fixe sur la tablette est considérée comme un tap."
-            android:defaultValue="150"
+            android:defaultValue="400"
+            />
+
+        <EditTextPreference
+            android:key="tap_max_distance"
+            android:inputType="numberDecimal"
+            android:title="Distance maximale entre le début et la fin d'un tap (en millimètres)"
+            android:summary="Distance maximale entre le début et la fin d'un tap pour qu'il soit considéré comme un tap."
+            android:defaultValue="1.0"
             />
 
         <EditTextPreference
             android:key="double_tap_timeout"
             android:inputType="numberDecimal"
-            android:title="Durée maximum d'un double tap (en milliseconde)"
-            android:summary="Durée maximum entre le premier et le deuxième tap."
+            android:title="Délai maximum d'un double tap (en milliseconde)"
+            android:summary="Durée maximale pour que deux taps soient considérés comme un double tap."
             android:defaultValue="400"
             />
 
+        <EditTextPreference
+            android:key="double_tap_max_distance"
+            android:inputType="numberDecimal"
+            android:title="Distance maximale entre deux taps (en millimètres)"
+            android:summary="Distance maximale pour que deux taps soient considérés comme un double tap."
+            android:defaultValue="8.0"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Détection des planches">
@@ -52,7 +67,7 @@
             android:key="interval_covered"
             android:inputType="numberDecimal"
             android:title="Intervalle de détection de recouvrement (en milliseconde)"
-            android:summary="Intervalle entre deux vérifications du recouvrement de la tablette par une planche."
+            android:summary="Intervalle entre deux vérifications du recouvrement de la tablette par une planche, quand il n'y a pas encore de planche sur la tablette."
             android:defaultValue="400"
             />
 
@@ -60,7 +75,7 @@
             android:key="interval_uncovered"
             android:inputType="numberDecimal"
             android:title="Intervalle de détection de découvrement (en milliseconde)"
-            android:summary="Intervalle entre deux vérifications du découvrement de la tablette par une planche."
+            android:summary="Intervalle entre deux vérifications du découvrement de la tablette par une planche, quand il y a déjà une planche sur la tablette."
             android:defaultValue="400"
             />
     </PreferenceCategory>

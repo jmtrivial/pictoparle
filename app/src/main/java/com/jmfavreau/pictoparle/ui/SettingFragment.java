@@ -27,6 +27,8 @@ public class SettingFragment extends PreferenceFragmentCompat {
     private Preference screen_height_mm;
     private Preference interval_covered;
     private Preference interval_uncovered;
+    private Preference distance_tap;
+    private Preference distance_double_tap;
     private Preference double_tap_timeout;
     private Preference tap_timeout;
     private Preference audio_verbosity;
@@ -107,6 +109,24 @@ public class SettingFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 activity.setIntervalUncovered(Integer.valueOf(newValue.toString()));
+                return true;
+            }
+        });
+
+        distance_tap = getPreferenceManager().findPreference("tap_max_distance");
+        distance_tap.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+           @Override
+           public boolean onPreferenceChange(Preference preference, Object newValue) {
+                activity.setMaxTapDistance(Float.valueOf(newValue.toString()));
+                return true;
+           }
+        });
+
+        distance_double_tap = getPreferenceManager().findPreference("double_tap_max_distance");
+        distance_double_tap.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                activity.setMaxDoubleTapDistance(Float.valueOf(newValue.toString()));
                 return true;
             }
         });

@@ -80,6 +80,8 @@ public class PictoParleActivity
     private boolean readExternal;
     public BoardManagerFragment boardManager;
     public BoardFragment boardFragment;
+    private float xdpmm;
+    private float ydpmm;
 
     // a function to show explanation when asking permission
     private void showExplanation(String title,
@@ -217,15 +219,28 @@ public class PictoParleActivity
         else
             screenHeightMM = 135.0f;
 
-        interval_covered = Integer.parseInt(preferences.getString("interval_covered", "4000"));
-        interval_uncovered = Integer.parseInt(preferences.getString("interval_uncovered", "1000"));
+        interval_covered = Integer.parseInt(preferences.getString("interval_covered", "100"));
+        interval_uncovered = Integer.parseInt(preferences.getString("interval_uncovered", "400"));
 
         params = new RobustGestureDetector.RobustGestureDetectorParams(
-                Integer.parseInt(preferences.getString("double_tap_timeout", "700")),
-                Integer.parseInt(preferences.getString("tap_timeout", "150")),
-                4096, 128);
+                Integer.parseInt(preferences.getString("double_tap_timeout", "600")),
+                Integer.parseInt(preferences.getString("tap_timeout", "600")),
+                Float.parseFloat(preferences.getString("double_tap_max_distance", "8.0")),
+                Float.parseFloat(preferences.getString("tap_max_distance", "1.0")));
+
+
+        updateDPMM();
+        params.setDPMM((xdpmm + ydpmm) / 2);
+
 
         audio_verbosity = Integer.parseInt(preferences.getString("audio_verbosity", "1"));
+    }
+
+    private void updateDPMM() {
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getRealSize(size);
+        xdpmm = (float) size.x / screenWidthMM;
+        ydpmm = (float) size.y / screenHeightMM;
     }
 
     public boolean getPreferenceIsActiveBoard(int id) {
@@ -431,6 +446,15 @@ public class PictoParleActivity
     public void setTapTimeout(int tap_timeout) {
         this.params.tapTimeout = tap_timeout;
     }
+
+    public void setMaxTapDistance(Float value) {
+        params.maxDistTapMM = value;
+    }
+
+    public void setMaxDoubleTapDistance(Float value) {
+        params.maxDistDoubleTapMM = value;
+    }
+
     public void setAudioVerbosity(int av) {
         audio_verbosity = av;
         audioRenderer.setAudioVerbosity(av);
@@ -459,23 +483,16 @@ public class PictoParleActivity
     }
 
     private void updateScreenSize() {
-        Point size = new Point();
-        getWindowManager().getDefaultDisplay().getRealSize(size);
-        // create boardSet from resources
-        float xdpmm = (float) size.x / screenWidthMM;
-        float ydpmm = (float) size.y / screenHeightMM;
+        updateDPMM();
         boardSet.updateSizes(xdpmm, ydpmm);
-        Log.d("Pictoparle", "updateScreenSizer");
+        params.setDPMM((xdpmm + ydpmm) / 2);
         if (boardFragment != null)
             boardFragment.createViews();
     }
 
     public void loadBoards() {
-        Point size = new Point();
-        getWindowManager().getDefaultDisplay().getRealSize(size);
+        updateDPMM();
         // create boardSet from resources
-        float xdpmm = (float) size.x / screenWidthMM;
-        float ydpmm = (float) size.y / screenHeightMM;
         boardSet = new BoardSet(this, getResources(), getPackageName(), xdpmm, ydpmm);
     }
 
@@ -502,4 +519,5 @@ public class PictoParleActivity
         }
 
     }
+
 }

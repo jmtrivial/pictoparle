@@ -63,6 +63,9 @@ public class RobustGestureDetector {
             this.single = single;
         }
 
+        public float distance2(float x, float y) {
+            return (x - downX) * (x - downX) + (y - downY) * (y - downY);
+        }
 
         public boolean isDoubleTap() {
             return isDouble;
@@ -110,7 +113,7 @@ public class RobustGestureDetector {
         for(int i = 0; i != shortTaps.size(); ) {
             float d = shortTaps.get(i).distance2(x, y);
             if (time < shortTaps.get(i).time + this.params.doubleTapTimeout) {
-                if ((d < this.params.scaledTouchSlop2) && ((dist == -1) || (dist > d))) {
+                if ((d <= this.params.getMaxSquaredDistanceDoubleTap()) && ((dist == -1) || (dist > d))) {
                     dist = d;
                     idBest = i;
                 }
@@ -149,10 +152,9 @@ public class RobustGestureDetector {
         DownEvent down = openTaps.get(pointerID);
         if (down != null) {
             long diffTime = time - down.downTime;
-            // first check if it is a tap
-
-            if (diffTime < this.params.tapTimeout) {
-                // do not consider the movement, to focus only in duration
+            float d = down.distance2(x, y);
+            // first check if it is a tap (duration and location)
+            if (diffTime < this.params.tapTimeout && d <= params.getMaxSquaredDistanceTap()) {
                 ShortTap tap = new ShortTap(time, x, y);
 
                 // check if it is a double tap
@@ -217,18 +219,31 @@ public class RobustGestureDetector {
     static public class RobustGestureDetectorParams {
         public int doubleTapTimeout; /* max time between two taps */
         public int tapTimeout;
-        public int scaledTouchSlop2; /* square value of max distance between down and up */
-        public int minSlide2;
+        public float maxDistDoubleTapMM; /* max distance between two taps in a double tap (unit: millimeter) */
+        public float maxDistTapMM; /* max distance between down and up (unit: millimeter) */
+        private float dpmm;
 
         public RobustGestureDetectorParams(int doubleTapTimeout,
                                            int tapTimeout,
-                                           int scaledTouchSlop2,
-                                           int minSlide2) {
+                                           float maxDistDoubleTapMM,
+                                           float maxDistTapMM) {
             this.doubleTapTimeout = doubleTapTimeout;
             this.tapTimeout = tapTimeout;
-            this.scaledTouchSlop2 = scaledTouchSlop2;
-            this.minSlide2 = minSlide2;
+            this.maxDistDoubleTapMM = maxDistDoubleTapMM;
+            this.maxDistTapMM = maxDistTapMM;
+            this.dpmm = 1.0F;
         }
 
+        public void setDPMM(float dpmm) {
+            this.dpmm = dpmm;
+        }
+
+        public int getMaxSquaredDistanceDoubleTap() {
+            return (int)(maxDistDoubleTapMM * maxDistDoubleTapMM * dpmm * dpmm);
+        }
+
+        public int getMaxSquaredDistanceTap() {
+            return (int)(maxDistTapMM * maxDistTapMM * dpmm * dpmm);
+        }
     }
 }
