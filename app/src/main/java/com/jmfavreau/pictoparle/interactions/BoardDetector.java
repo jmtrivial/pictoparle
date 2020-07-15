@@ -2,9 +2,9 @@ package com.jmfavreau.pictoparle.interactions;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
@@ -16,13 +16,11 @@ import com.google.zxing.ChecksumException;
 import com.google.zxing.FormatException;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
-import com.google.zxing.Reader;
 import com.google.zxing.Result;
-import com.google.zxing.client.android.camera.CameraConfigurationUtils;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.datamatrix.DataMatrixReader;
-import com.journeyapps.barcodescanner.camera.CameraSettings;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -186,9 +184,30 @@ public class BoardDetector  {
                     else {
                         param.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
 
+                        List<Camera.Area> regions = new ArrayList<>();
+                        Camera.Area center = new Camera.Area(new Rect(-200, -200, 200, 200), 1000);
+                        regions.add(center);
+                        if (param.getMaxNumFocusAreas() > 0) {
+                            param.setFocusAreas(regions);
+                            Log.d("pictoparle", "on défini des zones focus");
+                        }
+                        else {
+                            Log.d("Pictoparle", "impossible de définir des zones focus");
+                        }
+
+                        if (param.getMaxNumMeteringAreas() > 0) {
+                            param.setMeteringAreas(regions);
+                            Log.d("pictoparle", "on défini des zones");
+                        }
+                        else {
+                            Log.d("Pictoparle", "impossible de définir des zones");
+                        }
+
                         if (param.getFocusMode() != null) {
                             List<String> focusModes = param.getSupportedFocusModes();
-                            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO))
+                            if (focusModes.contains(Camera.Parameters.FOCUS_MODE_MACRO))
+                                param.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
+                            else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO))
                                 param.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
                             else
                                 param.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
@@ -291,10 +310,38 @@ public class BoardDetector  {
 
 
                         private Integer decode(byte[] data, Camera.Size size) {
+
                             // convert the image to a parsable version
                             PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(
                                     data, size.width, size.height, 0, 0, size.width, size.height, false);
                             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+                            /* USED TO DEBUG FINE TUNING OF THE CAMERA {
+                                YuvImage image = new YuvImage(data, ImageFormat.NV21,
+                                        size.width, size.height, null);
+                                Rect rectangle = new Rect();
+                                rectangle.bottom = size.height;
+                                rectangle.top = 0;
+                                rectangle.left = 0;
+                                rectangle.right = size.width;
+
+                                String root = Environment.getExternalStorageDirectory().toString();
+                                Calendar now = Calendar.getInstance();
+                                File file = new File(root, "pictoparle-" + now.getTimeInMillis() + ".jpg");
+                                if (file.exists ())
+                                    file.delete ();
+                                try {
+                                    FileOutputStream out = new FileOutputStream(file);
+                                    image.compressToJpeg(rectangle, 70, out);
+                                    out.flush();
+                                    out.close();
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+
+                            } */
 
                             // use zxing to read the QRCode
                             try {
@@ -304,7 +351,6 @@ public class BoardDetector  {
                                 return Integer.parseInt(text);
 
                             } catch (NotFoundException e) {
-                                Log.d("PictoParle", "checksum not found");
                             } catch (ChecksumException e) {
                                 Log.d("PictoParle", "checksum exception");
                                 return -1;
