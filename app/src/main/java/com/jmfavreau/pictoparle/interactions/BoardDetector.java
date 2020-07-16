@@ -184,25 +184,7 @@ public class BoardDetector  {
                     else {
                         param.setWhiteBalance(Camera.Parameters.WHITE_BALANCE_AUTO);
 
-                        List<Camera.Area> regions = new ArrayList<>();
-                        Camera.Area center = new Camera.Area(new Rect(-200, -200, 200, 200), 1000);
-                        regions.add(center);
-                        if (param.getMaxNumFocusAreas() > 0) {
-                            param.setFocusAreas(regions);
-                            Log.d("pictoparle", "on défini des zones focus");
-                        }
-                        else {
-                            Log.d("Pictoparle", "impossible de définir des zones focus");
-                        }
-
-                        if (param.getMaxNumMeteringAreas() > 0) {
-                            param.setMeteringAreas(regions);
-                            Log.d("pictoparle", "on défini des zones");
-                        }
-                        else {
-                            Log.d("Pictoparle", "impossible de définir des zones");
-                        }
-
+                        // set focus mode
                         if (param.getFocusMode() != null) {
                             List<String> focusModes = param.getSupportedFocusModes();
                             if (focusModes.contains(Camera.Parameters.FOCUS_MODE_MACRO))
@@ -213,7 +195,22 @@ public class BoardDetector  {
                                 param.setFocusMode(Camera.Parameters.FOCUS_MODE_INFINITY);
                         }
 
+                        // create a region corresponding to the center
+                        List<Camera.Area> regions = new ArrayList<>();
+                        Camera.Area center = new Camera.Area(new Rect(-200, -200, 200, 200), 1000);
+                        regions.add(center);
 
+                        // set this region as a focus area if possible
+                        if (param.getMaxNumFocusAreas() > 0) {
+                            param.setFocusAreas(regions);
+                        }
+
+                        // set this region as a metering for the brightness adjustment if possible
+                        if (param.getMaxNumMeteringAreas() > 0) {
+                            param.setMeteringAreas(regions);
+                        }
+
+                        // choose resolution
                         List<Camera.Size> prevResolutions = param.getSupportedPreviewSizes();
                         Collections.sort(prevResolutions, new Comparator<Camera.Size>() {
                             public int compare(final Camera.Size a, final Camera.Size b) {
