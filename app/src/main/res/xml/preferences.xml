@@ -54,6 +54,16 @@
             android:summary="Distance maximale pour que deux taps soient considérés comme un double tap."
             android:defaultValue="8.0"
             />
+
+        <EditTextPreference
+            android:key="threshold_y_other_touch"
+            android:inputType="numberDecimal"
+            android:title="Distance minimale à partir duquel un tap de bas d'écran est ignoré (en millimètres)"
+            android:summary="Distance verticale minimale entre un tap et ceux plus bas pour qu'ils soient considérés comme un appui de main."
+            android:defaultValue="20.0"
+            />
+
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Détection des planches">

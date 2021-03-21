@@ -245,4 +245,8 @@ class BoardView extends LinearLayout {
     }
 
 
+    public void initGestureDetectors() {
+        for(int i = 0; i != buttons.size(); ++i)
+            buttons.get(i).resetGestureDetector();
+    }
 }

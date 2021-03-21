@@ -79,6 +79,7 @@ public class BoardFragment extends Fragment implements BoardDetector.SimpleBoard
             } else {
                 boardView.setManual(false);
             }
+            boardView.initGestureDetectors();
             view.addView(boardView);
             activity.setCurrentFragment(this);
         }

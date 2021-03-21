@@ -226,7 +226,8 @@ public class PictoParleActivity
                 Integer.parseInt(preferences.getString("double_tap_timeout", "600")),
                 Integer.parseInt(preferences.getString("tap_timeout", "600")),
                 Float.parseFloat(preferences.getString("double_tap_max_distance", "8.0")),
-                Float.parseFloat(preferences.getString("tap_max_distance", "1.0")));
+                Float.parseFloat(preferences.getString("tap_max_distance", "1.0")),
+                Float.parseFloat(preferences.getString("threshold_y_other_touch", "20.0")));
 
 
         updateDPMM();

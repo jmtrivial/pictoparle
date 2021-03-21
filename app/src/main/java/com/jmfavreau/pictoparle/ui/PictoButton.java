@@ -145,6 +145,10 @@ class PictoButton extends LinearLayout {
         return gestureDetector.onTouchEvent(e);
     }
 
+    public void resetGestureDetector() {
+        gestureDetector.resetAllRobustGestureDetectors();
+    }
+
     //private class GestureListener extends GestureDetector.SimpleOnGestureListener {
     class GestureListener extends RobustGestureDetector.SimpleOnGestureListener {
 
