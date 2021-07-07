@@ -47,6 +47,8 @@ public class SettingFragment extends PreferenceFragmentCompat {
         screenHeight.put("lenovo-tab-m10", 136.0f);
         screenWidth.put("samsung-galaxy-a3", 106.0f);
         screenHeight.put("samsung-galaxy-a3", 60.5f);
+        screenWidth.put("samsung-tab-a7-sm-t500", 226.1f);
+        screenHeight.put("samsung-tab-a7-sm-t500", 136.6f);
         screenWidth.put("custom", -1.0f);
         screenHeight.put("custom", -1.0f);
 
