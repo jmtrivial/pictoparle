@@ -18,18 +18,4 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-    <string-array name="device_model">
-        <item>Lenovo Tab E10</item>
-        <item>Lenovo Tab M10</item>
-        <item>Samsung Tab A7 SM-T500</item>
-        <item>Samsung Galaxy A3</item>
-        <item>Personnaliser la résolution...</item>
-    </string-array>
-    <string-array name="device_model_values">
-        <item>lenovo-tab-e10</item>
-        <item>lenovo-tab-m10</item>
-        <item>samsung-tab-a7-sm-t500</item>
-        <item>samsung-galaxy-a3</item>
-        <item>custom</item>
-    </string-array>
 </resources>

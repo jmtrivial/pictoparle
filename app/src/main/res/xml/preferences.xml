@@ -103,9 +103,6 @@
             app:key="device_model"
             app:title="Appareil"
             app:useSimpleSummaryProvider="true"
-            app:entries="@array/device_model"
-            app:entryValues="@array/device_model_values"
-            app:defaultValue="lenovo-tab-e10"
             app:dialogTitle="Modèle de tablette ou téléphone." />
 
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device name="Lenovo Tab E10" id="lenovo-tab-e10">
+    <screen width="217" height="136" />
+    <board left="14" right="14" top="21" bottom="14" cornerRadius="2" thickness="8.9" />
+    <camera x="0" y="8.5" radius="1.5" />
+    <windows>
+        <window side="left" begin="10" end="75" />
+        <window side="right" begin="7" end="16" />
+        <window side="top" begin="30" end="60" bottom="5" />
+        <window side="top" begin="185" end="215" bottom="5" />
+    </windows>
+</device>

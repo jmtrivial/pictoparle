@@ -1,6 +1,8 @@
 package com.jmfavreau.pictoparle.ui;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +20,13 @@ import androidx.preference.PreferenceManager;
 
 import com.jmfavreau.pictoparle.PictoParleActivity;
 import com.jmfavreau.pictoparle.R;
+import com.jmfavreau.pictoparle.core.Board;
+import com.jmfavreau.pictoparle.core.Device;
+
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class SettingFragment extends PreferenceFragmentCompat {
     private PictoParleActivity activity;
@@ -35,24 +44,70 @@ public class SettingFragment extends PreferenceFragmentCompat {
     private Preference device_model;
     private ArrayMap<String, Float> screenWidth;
     private ArrayMap<String, Float> screenHeight;
+    private ArrayList<String> entries;
+    private ArrayList<String> entryValues;
+
+    private static final String CUSTOM = "custom";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+
         setPreferencesFromResource(R.xml.preferences, rootKey);
+        try {
+            buildDeviceList(getContext().getPackageName());
+        } catch (IOException e) {
+            Log.e("PictoParle", "IO Error while reading a device description.");
+        } catch (XmlPullParserException e) {
+            Log.e("PictoParle", "XML Error while reading a device description.");
+        }
+        updateDeviceList();
+    }
+
+    private void updateDeviceList() {
+        ListPreference prefList = findPreference("device_model");
+        prefList.setEntries(entries.toArray(new String[0]));
+        prefList.setEntryValues(entryValues.toArray(new String[0]));
+        prefList.setDefaultValue(entryValues.get(0));
+        prefList.setValue(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("device_model", entryValues.get(0)));
+    }
+
+    private void buildDeviceList(String packagename) throws XmlPullParserException, IOException {
         screenWidth = new ArrayMap<>();
         screenHeight = new ArrayMap<>();
-        screenWidth.put("lenovo-tab-e10", 216.0f);
-        screenHeight.put("lenovo-tab-e10", 135.0f);
-        screenWidth.put("lenovo-tab-m10", 217.0f);
-        screenHeight.put("lenovo-tab-m10", 136.0f);
-        screenWidth.put("samsung-galaxy-a3", 106.0f);
-        screenHeight.put("samsung-galaxy-a3", 60.5f);
-        screenWidth.put("samsung-tab-a7-sm-t500", 226.1f);
-        screenHeight.put("samsung-tab-a7-sm-t500", 136.6f);
-        screenWidth.put("custom", -1.0f);
-        screenHeight.put("custom", -1.0f);
+        entries = new ArrayList<>();
+        entryValues = new ArrayList<>();
 
+        Resources resources = getResources();
+        // load boards
+        XmlResourceParser xrp = resources.getXml(R.xml.devices);
+        do {
+
+            if (xrp.getEventType() == XmlResourceParser.START_TAG) {
+                if (xrp.getName().equals("device")) {
+                    int identifier = resources.getIdentifier(
+                            xrp.getAttributeValue(null, "name"),
+                            "xml", packagename);
+                    XmlResourceParser parser = resources.getXml(identifier);
+                    Device device = new Device(parser);
+                    if (device.isValid()) {
+                        addDevice(device);
+                    }
+                }
+            }
+        } while (xrp.next() != XmlResourceParser.END_DOCUMENT);
+
+        Device custom = new Device();
+        addDevice(custom);
     }
+
+    private void addDevice(Device device) {
+        String key = device.getDeviceKey();
+        screenWidth.put(key, device.getScreenWidth());
+        screenHeight.put(key, device.getScreenHeight());
+        entries.add(device.getDeviceName());
+        entryValues.add(key);
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -94,7 +149,7 @@ public class SettingFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 float value = Float.valueOf(newValue.toString());
                 activity.setScreenHeightMM(value);
-                screenHeight.put("custom", value);
+                screenHeight.put(CUSTOM, value);
                 return true;
             }
         });
@@ -189,21 +244,24 @@ public class SettingFragment extends PreferenceFragmentCompat {
     private String deviceName() {
         if (device_model instanceof ListPreference) {
             ListPreference listPref = (ListPreference) device_model;
-            return listPref.getValue();
+            if (listPref.getValue() != null)
+                return listPref.getValue();
+            else
+                return CUSTOM;
         }
         else {
-            return "custom";
+            return CUSTOM;
         }
     }
     private void setScreenSizeSettings() {
-        screenWidth.put("custom", Float.valueOf(((EditTextPreference) screen_width_mm).getText()));
-        screenHeight.put("custom", Float.valueOf(((EditTextPreference) screen_height_mm).getText()));
+        screenWidth.put(CUSTOM, Float.valueOf(((EditTextPreference) screen_width_mm).getText()));
+        screenHeight.put(CUSTOM, Float.valueOf(((EditTextPreference) screen_height_mm).getText()));
         setScreenSizeSettings(deviceName());
     }
 
     private void setScreenSizeSettings(String value) {
-        screen_width_mm.setVisible(value.equals("custom"));
-        screen_height_mm.setVisible(value.equals("custom"));
+        screen_width_mm.setVisible(value.equals(CUSTOM));
+        screen_height_mm.setVisible(value.equals(CUSTOM));
         EditTextPreference editWPref = (EditTextPreference) screen_width_mm;
         editWPref.setText(String.valueOf(screenWidth.get(value)));
         EditTextPreference editHPref = (EditTextPreference) screen_height_mm;

@@ -1,0 +1,11 @@
+<device name="Lenovo Tab M10 HD" id="lenovo-tab-m10">
+    <screen width="217" height="136" />
+    <board left="13" right="13" top="17" bottom="16" cornerRadius="2" thickness="8.1" />
+    <camera x="0" y="7.5" radius="1.5" />
+    <windows>
+        <window side="left" begin="20" end="75" />
+        <window side="right" begin="5" end="35" />
+        <window side="top" begin="36" end="60" bottom="5" />
+        <window side="top" begin="183" end="207" bottom="5" />
+    </windows>
+</device>

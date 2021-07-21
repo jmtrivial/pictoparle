@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<devices xmlns:android="http://schemas.android.com/apk/res/android">
+    <device name="lenovo_tab_e10" />
+    <device name="lenovo_tab_m10" />
+    <device name="samsung_tab_a7_2021" />
+    <device name="samsung_galaxy_a3" />
+</devices>

@@ -207,6 +207,7 @@ public class PictoParleActivity
 
         active_board_detection = preferences.getBoolean("board_detection", true);
 
+        // TODO: if the size is not defined, ask the user to select a device model (open the settings fragment)
         String w = preferences.getString("screen_width_mm", "216");
         if (w != null && !w.equals("null"))
             screenWidthMM = Float.parseFloat(w);

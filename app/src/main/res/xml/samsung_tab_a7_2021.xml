@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device name="Samsung Tab A7 2021" id="samsung-tab-a7-2021">
+    <screen width="227" height="158" />
+    <board left="?" right="?" top="?" bottom="?" cornerRadius="2" thickness="7" />
+    <camera x="0" y="7.5" radius="1.5" />
+    <windows>
+        <window side="left" begin="20" end="75" />
+        <window side="right" begin="5" end="35" />
+        <window side="top" begin="36" end="60" bottom="5" />
+        <window side="top" begin="183" end="207" bottom="5" />
+    </windows>
+</device>
