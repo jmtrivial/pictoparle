@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <device name="Samsung Tab A7 2021" id="samsung-tab-a7-2021">
-    <screen width="227" height="158" />
-    <board left="?" right="?" top="?" bottom="?" cornerRadius="2" thickness="7" />
-    <camera x="0" y="7.5" radius="1.5" />
+    <screen width="226" height="136" />
+    <board left="10.7" right="10.7" top="10.7" bottom="10.7" cornerRadius="6" thickness="7.0" />
+    <camera x="0" y="5.5" radius="1.2" />
     <windows>
-        <window side="left" begin="20" end="75" />
-        <window side="right" begin="5" end="35" />
-        <window side="top" begin="36" end="60" bottom="5" />
-        <window side="top" begin="183" end="207" bottom="5" />
+        <window side="left" begin="29" end="46" bottom="2" />
+        <window side="right" begin="29" end="46" bottom="2" />
     </windows>
 </device>
