@@ -207,18 +207,18 @@ public class PictoParleActivity
 
         active_board_detection = preferences.getBoolean("board_detection", true);
 
-        // TODO: if the size is not defined, ask the user to select a device model (open the settings fragment)
-        String w = preferences.getString("screen_width_mm", "216");
-        if (w != null && !w.equals("null"))
-            screenWidthMM = Float.parseFloat(w);
-        else
-            screenWidthMM = 216.0f;
+        String w = preferences.getString("screen_width_mm", null);
+        String h = preferences.getString("screen_height_mm", null);
 
-        String h = preferences.getString("screen_height_mm", "135");
-        if (h != null && !h.equals("null"))
+        if (w != null && !w.equals("null") && h != null && !h.equals("null")) {
+            screenWidthMM = Float.parseFloat(w);
             screenHeightMM = Float.parseFloat(h);
-        else
+        }
+        else {
+            // TODO: if the size is not defined, ask the user to select a device model (open the settings fragment)
+            screenWidthMM = 216.0f;
             screenHeightMM = 135.0f;
+        }
 
         interval_covered = Integer.parseInt(preferences.getString("interval_covered", "100"));
         interval_uncovered = Integer.parseInt(preferences.getString("interval_uncovered", "400"));
