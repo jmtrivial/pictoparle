@@ -17,6 +17,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
 
 import com.jmfavreau.pictoparle.PictoParleActivity;
 import com.jmfavreau.pictoparle.R;
@@ -68,7 +69,6 @@ public class SettingFragment extends PreferenceFragmentCompat {
         prefList.setEntries(entries.toArray(new String[0]));
         prefList.setEntryValues(entryValues.toArray(new String[0]));
         prefList.setDefaultValue(entryValues.get(0));
-        prefList.setValue(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("device_model", entryValues.get(0)));
     }
 
     private void buildDeviceList(String packagename) throws XmlPullParserException, IOException {
@@ -174,11 +174,11 @@ public class SettingFragment extends PreferenceFragmentCompat {
 
         distance_tap = getPreferenceManager().findPreference("tap_max_distance");
         distance_tap.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-           @Override
-           public boolean onPreferenceChange(Preference preference, Object newValue) {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
                 activity.setMaxTapDistance(Float.valueOf(newValue.toString()));
                 return true;
-           }
+            }
         });
 
         distance_double_tap = getPreferenceManager().findPreference("double_tap_max_distance");
@@ -233,14 +233,21 @@ public class SettingFragment extends PreferenceFragmentCompat {
     public void onResume() {
         super.onResume();
         activity.boardDetector.setInactive();
+
+        boolean popup = !activity.isScreenSizeDefined();
+
         activity.setScreenVisible(true);
         setTitle();
         activity.setCurrentFragment(null);
         setScreenSizeSettings();
         activity.findViewById(R.id.add_button).setVisibility(View.GONE);
+
+        if (popup) {
+            getPreferenceManager().showDialog(device_model);
+        }
     }
 
-
+    
     private String deviceName() {
         if (device_model instanceof ListPreference) {
             ListPreference listPref = (ListPreference) device_model;

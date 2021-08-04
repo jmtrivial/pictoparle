@@ -199,6 +199,13 @@ public class PictoParleActivity
         // set volume buttons to control this application volume
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
+        if (!isScreenSizeDefined())
+            navController.navigate(R.id.view_preferences);
+
+    }
+
+    public boolean isScreenSizeDefined() {
+        return screenWidthMM > 0 && screenHeightMM > 0;
     }
 
     private void loadPreferences() {
@@ -207,18 +214,7 @@ public class PictoParleActivity
 
         active_board_detection = preferences.getBoolean("board_detection", true);
 
-        String w = preferences.getString("screen_width_mm", null);
-        String h = preferences.getString("screen_height_mm", null);
 
-        if (w != null && !w.equals("null") && h != null && !h.equals("null")) {
-            screenWidthMM = Float.parseFloat(w);
-            screenHeightMM = Float.parseFloat(h);
-        }
-        else {
-            // TODO: if the size is not defined, ask the user to select a device model (open the settings fragment)
-            screenWidthMM = 216.0f;
-            screenHeightMM = 135.0f;
-        }
 
         interval_covered = Integer.parseInt(preferences.getString("interval_covered", "100"));
         interval_uncovered = Integer.parseInt(preferences.getString("interval_uncovered", "400"));
@@ -236,6 +232,19 @@ public class PictoParleActivity
 
 
         audio_verbosity = Integer.parseInt(preferences.getString("audio_verbosity", "1"));
+
+        String w = preferences.getString("screen_width_mm", null);
+        String h = preferences.getString("screen_height_mm", null);
+
+        if (w != null && !w.equals("null") && h != null && !h.equals("null")) {
+            screenWidthMM = Float.parseFloat(w);
+            screenHeightMM = Float.parseFloat(h);
+        }
+        else {
+            // the size is not defined
+            screenWidthMM = -1f;
+            screenHeightMM = -1f;
+        }
     }
 
     private void updateDPMM() {
@@ -424,6 +433,7 @@ public class PictoParleActivity
     }
 
     public void setScreenWidthMM(float screenWidthMM) {
+        Log.d("PREFERENCES", "set screen width");
         this.screenWidthMM = screenWidthMM;
         updateScreenSize();
     }
